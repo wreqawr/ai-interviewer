@@ -1,7 +1,7 @@
-package cn.minglg.interview.pojo;
+package cn.minglg.interview.auth.pojo;
 
 import cn.hutool.core.annotation.PropIgnore;
-import cn.minglg.interview.constant.UserStatus;
+import cn.minglg.interview.auth.constant.UserStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

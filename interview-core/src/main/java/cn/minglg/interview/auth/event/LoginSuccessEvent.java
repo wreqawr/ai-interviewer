@@ -1,6 +1,6 @@
-package cn.minglg.interview.event;
+package cn.minglg.interview.auth.event;
 
-import cn.minglg.interview.pojo.User;
+import cn.minglg.interview.auth.pojo.User;
 import org.springframework.context.ApplicationEvent;
 
 /**

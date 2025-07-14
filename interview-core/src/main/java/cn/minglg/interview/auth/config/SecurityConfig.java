@@ -1,9 +1,9 @@
-package cn.minglg.interview.config;
+package cn.minglg.interview.auth.config;
 
-import cn.minglg.interview.filter.CustomAuthenticationFilter;
-import cn.minglg.interview.handler.CustomAuthenticationFailureHandler;
-import cn.minglg.interview.handler.CustomAuthenticationSuccessHandler;
-import cn.minglg.interview.properties.GlobalProperties;
+import cn.minglg.interview.auth.filter.CustomAuthenticationFilter;
+import cn.minglg.interview.auth.handler.CustomAuthenticationFailureHandler;
+import cn.minglg.interview.auth.handler.CustomAuthenticationSuccessHandler;
+import cn.minglg.interview.auth.properties.GlobalProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

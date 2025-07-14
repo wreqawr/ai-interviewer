@@ -1,7 +1,7 @@
-package cn.minglg.interview.handler;
+package cn.minglg.interview.auth.handler;
 
 import cn.hutool.json.JSONUtil;
-import cn.minglg.interview.response.R;
+import cn.minglg.interview.auth.response.R;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

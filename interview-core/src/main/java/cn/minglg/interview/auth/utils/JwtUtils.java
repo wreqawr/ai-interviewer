@@ -1,8 +1,8 @@
-package cn.minglg.interview.utils;
+package cn.minglg.interview.auth.utils;
 
 import cn.hutool.json.JSONConfig;
 import cn.hutool.json.JSONUtil;
-import cn.minglg.interview.pojo.User;
+import cn.minglg.interview.auth.pojo.User;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;

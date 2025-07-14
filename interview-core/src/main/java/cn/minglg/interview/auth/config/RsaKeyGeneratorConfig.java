@@ -1,4 +1,4 @@
-package cn.minglg.interview.config;
+package cn.minglg.interview.auth.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

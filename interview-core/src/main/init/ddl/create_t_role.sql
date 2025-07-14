@@ -1,5 +1,6 @@
+DROP TABLE IF EXISTS t_role;
 -- 角色表 (Spring Security规范ROLE_前缀)
-CREATE TABLE t_role
+CREATE TABLE IF NOT EXISTS t_role
 (
     role_id     INT                NOT NULL AUTO_INCREMENT COMMENT '角色id(自增主键)',
     role_name   VARCHAR(20) UNIQUE NOT NULL COMMENT '角色常量值',

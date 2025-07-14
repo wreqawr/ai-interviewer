@@ -1,4 +1,4 @@
-package cn.minglg.interview.event;
+package cn.minglg.interview.auth.event;
 
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;

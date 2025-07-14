@@ -1,4 +1,4 @@
-package cn.minglg.interview.interceptors;
+package cn.minglg.interview.auth.interceptors;
 
 import org.springframework.web.servlet.HandlerInterceptor;
 

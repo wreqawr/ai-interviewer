@@ -1,7 +1,7 @@
-package cn.minglg.interview.payload;
+package cn.minglg.interview.auth.payload;
 
-import cn.minglg.interview.constant.UserRole;
-import cn.minglg.interview.constant.UserStatus;
+import cn.minglg.interview.auth.constant.UserRole;
+import cn.minglg.interview.auth.constant.UserStatus;
 import lombok.Data;
 
 import java.time.LocalDateTime;

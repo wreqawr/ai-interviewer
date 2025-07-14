@@ -1,4 +1,4 @@
-package cn.minglg.interview.response;
+package cn.minglg.interview.auth.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

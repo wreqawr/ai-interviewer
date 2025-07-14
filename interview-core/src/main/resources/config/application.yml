@@ -1,15 +1,82 @@
+server:
+  port: 8081
+
 spring:
   application:
     name: interview-core
+  banner:
+    location: classpath:banner/banner.txt
+
+  #   数据源配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://minglg.cn:5303/interview
-    username: minglg
-    password: kfzx-minglg@
+    url: ${MYSQL_JDBC_URL}
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
     type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      #       连接池核心配置
+      #       最大连接数
+      max-active: 10
+      #       初始连接数
+      initial-size: 5
+      #       最小空闲连接
+      min-idle: 5
 
-  #mybatis配置
-  mybatis:
-    configuration:
-      map-underscore-to-camel-case: true
-    mapper-locations: classpath:mapper/*.xml
+  # redis配置
+  data:
+    #    基本配置
+    redis:
+      cluster:
+        nodes:
+          - ${REDIS_HOST}:8376
+          - ${REDIS_HOST}:8377
+          - ${REDIS_HOST}:8378
+          - ${REDIS_HOST}:8379
+          - ${REDIS_HOST}:8380
+          - ${REDIS_HOST}:8381
+        max-redirects: 3
+      #      超时时间（毫秒）
+      connect-timeout: 5000
+      #      密码
+      password: ${REDIS_PASSWORD}
+      #      连接池配置
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+          max-wait: -1ms
+#        cluster:
+#          refresh:
+#            adaptive: true
+#            period: 2000
+#            dynamic-refresh-sources: true
+
+#mybatis配置
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+    # 开启懒加载配置
+    lazy-loading-enabled: true
+    aggressive-lazy-loading: false
+  mapper-locations: classpath:mapper/*.xml
+
+
+# 全局配置
+global:
+  login-timeout-seconds: 5
+  jwt-expiration-minutes: 10
+  security-key: user:security:login
+  login-uri: /user/login
+  # 不会被拦截的请求路径
+  green-channel-uri:
+    - /user/login
+    - /user/publicKey
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+  show-actuator: true

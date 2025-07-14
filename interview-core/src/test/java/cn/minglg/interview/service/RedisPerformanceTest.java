@@ -1,6 +1,5 @@
 package cn.minglg.interview.service;
 
-import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +18,12 @@ public class RedisPerformanceTest {
     @Autowired
     private RedisService redisService;
 
-    private static final int TOTAL_KEYS = 10_000;
-    private static final int THREAD_COUNT = 10;
-    private static final int BATCH_SIZE = 100;  // 每批处理100个键
-    private static final String KEY_PREFIX = "perf_key_";
+    private static final int TOTAL_KEYS = 1_000_000_0;
+    private static final int THREAD_COUNT = 20;
+    private static final int BATCH_SIZE = 1000;  // 每批处理100个键
+    private static final String KEY_PREFIX = "key_";
 
-    private final List<String> allKeys = new ArrayList<>();
+    private final List<Object> allKeys = new ArrayList<>();
 
     /**
      * 批量化插入数据
@@ -41,8 +40,8 @@ public class RedisPerformanceTest {
 
                 // 构建批次数据
                 for (int j = 0; j < BATCH_SIZE && batchStart + j < start + keysPerThread; j++) {
-                    String key = KEY_PREFIX + (batchStart + j);
-                    String value = UUID.randomUUID().toString().replace("-", "");
+                    String key = KEY_PREFIX + (batchStart + j + 1);
+                    String value = UUID.randomUUID().toString().replace("-", "").substring(0, 10);
                     batch.put(key, value);
                     synchronized (allKeys) {
                         allKeys.add(key);  // 记录键用于清理
@@ -84,13 +83,12 @@ public class RedisPerformanceTest {
     /**
      * 测试后清理数据
      */
-    @After
     public void cleanup() {
         if (allKeys.isEmpty()) return;
 
         System.out.println("清理测试数据...");
         // 批量删除键
-        redisService.del(Arrays.toString(allKeys.toArray(new String[0])));
+        redisService.del(allKeys);
         allKeys.clear();
     }
 }

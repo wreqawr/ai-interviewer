@@ -1,6 +1,6 @@
-package cn.minglg.interview.mapper;
+package cn.minglg.interview.auth.mapper;
 
-import cn.minglg.interview.pojo.Company;
+import cn.minglg.interview.auth.pojo.Company;
 import org.apache.ibatis.annotations.Param;
 
 /**

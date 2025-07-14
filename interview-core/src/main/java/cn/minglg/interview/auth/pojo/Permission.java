@@ -1,4 +1,4 @@
-package cn.minglg.interview.pojo;
+package cn.minglg.interview.auth.pojo;
 
 import cn.hutool.core.annotation.PropIgnore;
 import lombok.Data;

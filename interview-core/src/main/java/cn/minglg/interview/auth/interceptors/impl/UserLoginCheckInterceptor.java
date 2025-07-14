@@ -1,7 +1,7 @@
-package cn.minglg.interview.interceptors.impl;
+package cn.minglg.interview.auth.interceptors.impl;
 
-import cn.minglg.interview.annotation.RequireLogin;
-import cn.minglg.interview.interceptors.CustomInterceptor;
+import cn.minglg.interview.auth.annotation.RequireLogin;
+import cn.minglg.interview.auth.interceptors.CustomInterceptor;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;

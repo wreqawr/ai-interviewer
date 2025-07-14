@@ -1,4 +1,4 @@
-package cn.minglg.interview.properties;
+package cn.minglg.interview.auth.properties;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

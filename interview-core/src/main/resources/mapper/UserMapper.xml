@@ -1,14 +1,41 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.minglg.library.mappers.BookMapper">
-    <insert id="addBook">
-        insert into books(isbn, book_name, author, publisher, publication_date, price, stock_quantity)
-        values ('9787020150100', '埃隆·马斯克传', 'minglg', 'China', '2025-04-29', 199.99, 10)
-    </insert>
-    <select id="getBookList" resultType="cn.minglg.library.pojo.Book">
-        select *
-        from books
+<mapper namespace="cn.minglg.interview.auth.mapper.UserMapper">
+
+    <!-- 基本用户结果映射 -->
+    <resultMap id="baseUserMap" type="cn.minglg.interview.auth.pojo.User">
+        <id property="userId" column="user_id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="nickname" column="nickname"/>
+        <result property="email" column="email"/>
+        <result property="status" column="status"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <!-- 完整用户结果映射（使用嵌套查询） -->
+    <resultMap id="fullUserMap" type="cn.minglg.interview.auth.pojo.User" extends="baseUserMap">
+        <!-- 关联公司信息 -->
+        <association property="company" column="user_id"
+                     select="cn.minglg.interview.auth.mapper.CompanyMapper.getCompanyByUserId"/>
+
+        <!-- 关联角色信息 -->
+        <collection property="roles" column="user_id"
+                    select="cn.minglg.interview.auth.mapper.RoleMapper.getRoleListByUserId"/>
+    </resultMap>
+
+    <!-- 获取基础用户信息 -->
+    <select id="getBasicUserByUserName" resultMap="baseUserMap">
+        SELECT *
+        FROM t_user
+        WHERE username = #{userName}
+    </select>
+
+    <!-- 获取完整用户信息（触发嵌套查询） -->
+    <select id="getUserWithDetailsByUserName" resultMap="fullUserMap">
+        SELECT *
+        FROM t_user
+        WHERE username = #{userName}
     </select>
 </mapper>

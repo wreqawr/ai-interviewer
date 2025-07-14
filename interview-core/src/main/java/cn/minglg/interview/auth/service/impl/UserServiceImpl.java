@@ -1,8 +1,8 @@
-package cn.minglg.interview.service.impl;
+package cn.minglg.interview.auth.service.impl;
 
-import cn.minglg.interview.mapper.UserMapper;
-import cn.minglg.interview.pojo.User;
-import cn.minglg.interview.service.UserService;
+import cn.minglg.interview.auth.mapper.UserMapper;
+import cn.minglg.interview.auth.pojo.User;
+import cn.minglg.interview.auth.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

@@ -1,4 +1,4 @@
-package cn.minglg.interview.exception;
+package cn.minglg.interview.auth.exception;
 
 /**
  * @author kfzx-minglg

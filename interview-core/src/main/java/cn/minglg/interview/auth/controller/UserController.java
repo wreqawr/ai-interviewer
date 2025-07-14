@@ -1,11 +1,12 @@
-package cn.minglg.interview.controller;
+package cn.minglg.interview.auth.controller;
 
-import cn.minglg.interview.annotation.RequireLogin;
-import cn.minglg.interview.service.UserService;
+import cn.minglg.interview.auth.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.security.KeyPair;
 import java.util.HashMap;
@@ -69,18 +70,6 @@ public class UserController {
         return new ResponseEntity<>(this.userService.addUser(user), HttpStatus.OK);
     }
 */
-    @GetMapping("/need/{id}")
-    @RequireLogin
-    public Map<String, Object> needLogin(@RequestHeader("Authorization") String token,
-                                         @PathVariable("id") String id) {
-        System.out.println(token);
-        return userService.needLogin(token, id);
-    }
-
-    @GetMapping("/notNeed/{id}")
-    public Map<String, Object> notNeedLogin(@PathVariable("id") String id) {
-        return userService.notNeedLogin(id);
-    }
 
 
 }

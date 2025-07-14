@@ -1,4 +1,4 @@
-package cn.minglg.interview.service;
+package cn.minglg.interview.auth.service;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
 
