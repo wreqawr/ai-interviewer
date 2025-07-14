@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.minglg.library.mappers.BookMapper">
+    <insert id="addBook">
+        insert into books(isbn, book_name, author, publisher, publication_date, price, stock_quantity)
+        values ('9787020150100', '埃隆·马斯克传', 'minglg', 'China', '2025-04-29', 199.99, 10)
+    </insert>
+    <select id="getBookList" resultType="cn.minglg.library.pojo.Book">
+        select *
+        from books
+    </select>
+</mapper>

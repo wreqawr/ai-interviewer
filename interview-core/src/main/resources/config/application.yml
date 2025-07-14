@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: interview-core
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://minglg.cn:5303/interview
+    username: minglg
+    password: kfzx-minglg@
+    type: com.alibaba.druid.pool.DruidDataSource
+
+  #mybatis配置
+  mybatis:
+    configuration:
+      map-underscore-to-camel-case: true
+    mapper-locations: classpath:mapper/*.xml

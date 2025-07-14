@@ -1,0 +1,87 @@
+package cn.minglg.interview.filter;
+
+import cn.hutool.json.JSONUtil;
+import cn.minglg.interview.pojo.User;
+import cn.minglg.interview.properties.GlobalProperties;
+import cn.minglg.interview.response.R;
+import cn.minglg.interview.utils.JwtUtils;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+import java.security.KeyPair;
+import java.util.List;
+
+/**
+ * ClassName:JwtTokenFilter
+ * Package:cn.minglg.interview.filter
+ * Description:JWT验证过滤器
+ *
+ * @Author kfzx-minglg
+ * @Create 2025/7/13
+ * @Version 1.0
+ */
+@Component
+public class JwtTokenFilter extends OncePerRequestFilter {
+    private final KeyPair keyPair;
+    private final RedisTemplate<Object, Object> redisTemplate;
+    private final GlobalProperties globalProperties;
+
+    public JwtTokenFilter(KeyPair keyPair, RedisTemplate<Object, Object> redisTemplate, GlobalProperties globalProperties) {
+        this.keyPair = keyPair;
+        this.redisTemplate = redisTemplate;
+        this.globalProperties = globalProperties;
+    }
+
+    /**
+     * Same contract as for {@code doFilter}, but guaranteed to be
+     * just invoked once per request within a single request thread.
+     * See {@link #shouldNotFilterAsyncDispatch()} for details.
+     * <p>Provides HttpServletRequest and HttpServletResponse arguments instead of the
+     * default ServletRequest and ServletResponse ones.
+     *
+     * @param request
+     * @param response
+     * @param filterChain
+     */
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        response.setContentType("application/json;charset=UTF-8");
+        String requestUri = request.getRequestURI();
+        R checkResult = R.builder().code(401).message("请先登录！").build();
+        List<String> greenChannelUri = globalProperties.getGreenChannelUri();
+        String securityKey = globalProperties.getSecurityKey();
+        // 绿色通道直接放行
+        if (greenChannelUri.contains(requestUri)) {
+            SecurityContextHolder.clearContext();
+            filterChain.doFilter(request, response);
+        } else {
+            String token = request.getHeader("Authorization");
+            try {
+                // 解析token，获取userId，和redis比较
+                User user = JwtUtils.verifyJwt(token, keyPair);
+                String redisToken = (String) redisTemplate.opsForHash().get(securityKey, user.getUserId());
+                // 验证通过放行
+                if (redisToken != null && redisToken.equals(token)) {
+                    // 要在spring security的上下文中放置一个认证对象。
+                    // 这样的话，spring security在执行后续的Filter的时候，
+                    // 才知道这个人是登录了的。
+                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                    filterChain.doFilter(request, response);
+                } else {
+                    response.getWriter().write(JSONUtil.toJsonStr(checkResult));
+                }
+            } catch (Exception e) {
+                response.getWriter().write(JSONUtil.toJsonStr(checkResult));
+            }
+        }
+    }
+}
