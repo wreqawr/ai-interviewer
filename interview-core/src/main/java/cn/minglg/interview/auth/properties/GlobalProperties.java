@@ -8,6 +8,7 @@ import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,6 +39,7 @@ public class GlobalProperties {
      */
     @PostConstruct
     public void initRequestMatcher() {
+        whiteListPatterns = whiteListPatterns == null ? Collections.emptyList() : whiteListPatterns;
         this.whiteListPatternsAsRequestMatcher =
                 new OrRequestMatcher(this.getWhiteListPatterns()
                         .stream()
