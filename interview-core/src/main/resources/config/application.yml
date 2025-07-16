@@ -1,5 +1,16 @@
+# 项目运行端口
 server:
   port: 8081
+
+# actuator观测指标
+management:
+  endpoints:
+    web:
+      discovery:
+        enabled: true
+      exposure:
+        include: '*'
+
 
 spring:
   application:
@@ -69,10 +80,11 @@ global:
   jwt-expiration-minutes: 10
   security-key: user:security:login
   login-uri: /user/login
-  # 不会被拦截的请求路径
-  green-channel-uri:
-    - /user/login
-    - /user/publicKey
+  # 不会被拦截的请求路径（白名单，支持通配符表达式）
+  white-list-patterns:
+    - /user/login     # 登录页
+    - /user/publicKey # 获取公钥
+    - /actuator       # 可观测性监控
 
 springdoc:
   api-docs:
@@ -80,3 +92,4 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
   show-actuator: true
+
