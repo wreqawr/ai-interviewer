@@ -1,6 +1,7 @@
 package cn.minglg.interview.auth.config;
 
 import cn.minglg.interview.auth.filter.CustomAuthenticationFilter;
+import cn.minglg.interview.auth.filter.JwtTokenFilter;
 import cn.minglg.interview.auth.handler.CustomAuthenticationFailureHandler;
 import cn.minglg.interview.auth.handler.CustomAuthenticationSuccessHandler;
 import cn.minglg.interview.auth.properties.GlobalProperties;
@@ -16,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.context.SecurityContextHolderFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -40,14 +42,18 @@ public class SecurityConfig {
     private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
     private final KeyPair keyPair;
     private final GlobalProperties globalProperties;
+    private final JwtTokenFilter jwtTokenFilter;
 
-    public SecurityConfig(CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler, CustomAuthenticationFailureHandler customAuthenticationFailureHandler, KeyPair keyPair, GlobalProperties globalProperties) {
+    public SecurityConfig(CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler,
+                          CustomAuthenticationFailureHandler customAuthenticationFailureHandler,
+                          KeyPair keyPair, GlobalProperties globalProperties,
+                          JwtTokenFilter jwtTokenFilter) {
         this.customAuthenticationSuccessHandler = customAuthenticationSuccessHandler;
         this.customAuthenticationFailureHandler = customAuthenticationFailureHandler;
         this.keyPair = keyPair;
         this.globalProperties = globalProperties;
+        this.jwtTokenFilter = jwtTokenFilter;
     }
-
 
 
     @Bean
@@ -94,7 +100,9 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http, CustomAuthenticationFilter customAuthenticationFilter, CorsConfigurationSource configurationSource) throws Exception {
         return http
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()  // 允许所有请求，无需认证
+                        .requestMatchers(globalProperties.getWhiteListPatterns().toArray(new String[0]))
+                        .permitAll()  // 白名单内请求，无需认证
+                        .anyRequest().authenticated() // 其他所有请求走认证
                 )
                 // 关闭CSRF
                 .csrf(AbstractHttpConfigurer::disable)
@@ -106,6 +114,8 @@ public class SecurityConfig {
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // 自定义认证过滤器，替换框架默认的UsernamePasswordAuthenticationFilter
                 .addFilterAt(customAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                // 关键位置：在 SecurityContextHolderFilter之前添加jwtTokenFilter
+                .addFilterBefore(jwtTokenFilter, SecurityContextHolderFilter.class)
                 .build();
     }
 

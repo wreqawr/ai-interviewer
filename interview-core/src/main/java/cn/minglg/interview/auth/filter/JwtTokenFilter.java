@@ -17,7 +17,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.security.KeyPair;
-import java.util.List;
 
 /**
  * ClassName:JwtTokenFilter
@@ -34,7 +33,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     private final RedisTemplate<Object, Object> redisTemplate;
     private final GlobalProperties globalProperties;
 
-    public JwtTokenFilter(KeyPair keyPair, RedisTemplate<Object, Object> redisTemplate, GlobalProperties globalProperties) {
+    public JwtTokenFilter(KeyPair keyPair,
+                          RedisTemplate<Object, Object> redisTemplate,
+                          GlobalProperties globalProperties) {
         this.keyPair = keyPair;
         this.redisTemplate = redisTemplate;
         this.globalProperties = globalProperties;
@@ -56,11 +57,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         response.setContentType("application/json;charset=UTF-8");
         String requestUri = request.getRequestURI();
         R checkResult = R.builder().code(401).message("请先登录！").build();
-        List<String> greenChannelUri = globalProperties.getGreenChannelUri();
         String securityKey = globalProperties.getSecurityKey();
         // 绿色通道直接放行
-        if (greenChannelUri.contains(requestUri)) {
-            SecurityContextHolder.clearContext();
+        if (this.globalProperties.getWhiteListPatternsAsRequestMatcher().matches(request)) {
             filterChain.doFilter(request, response);
         } else {
             String token = request.getHeader("Authorization");

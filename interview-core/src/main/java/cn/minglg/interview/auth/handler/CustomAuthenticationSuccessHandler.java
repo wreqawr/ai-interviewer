@@ -58,7 +58,8 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         // 登录信息保存至redis
         redisTemplate.expire(securityKey, expiration, TimeUnit.MINUTES);
         redisTemplate.opsForHash().put(securityKey, user.getUserId(), token);
-        R result = R.builder().code(200).message("登录成功，欢迎：" + user.getUsername()).data(token).build();
+        R result = R.builder().code(200).message("登录成功，欢迎：" + user.getUsername()).build();
+        response.setHeader("Authorization", token);
         response.getWriter().write(JSONUtil.toJsonStr(result));
     }
 }

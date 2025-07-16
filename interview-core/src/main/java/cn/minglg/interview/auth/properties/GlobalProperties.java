@@ -1,10 +1,16 @@
 package cn.minglg.interview.auth.properties;
 
+import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * ClassName:GlobalProperties
@@ -21,8 +27,23 @@ import java.util.List;
 public class GlobalProperties {
     private String loginUri;
     private String securityKey;
-    private List<String> greenChannelUri;
+    private List<String> whiteListPatterns;
     private long timeoutSeconds;
     private long loginTimeoutSeconds;
     private long jwtExpirationMinutes;
+    private RequestMatcher whiteListPatternsAsRequestMatcher;
+
+
+    /**
+     * 在属性注入后执行该方法，确保whiteListPatternsAsRequestMatcher属性被正确注入
+     */
+    @PostConstruct
+    public void initRequestMatcher() {
+        whiteListPatterns = whiteListPatterns == null ? Collections.emptyList() : whiteListPatterns;
+        this.whiteListPatternsAsRequestMatcher =
+                new OrRequestMatcher(this.getWhiteListPatterns()
+                        .stream()
+                        .map(AntPathRequestMatcher::new)
+                        .collect(Collectors.toList()));
+    }
 }
