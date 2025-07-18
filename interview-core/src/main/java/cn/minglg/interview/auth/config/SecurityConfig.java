@@ -2,8 +2,10 @@ package cn.minglg.interview.auth.config;
 
 import cn.minglg.interview.auth.filter.CustomAuthenticationFilter;
 import cn.minglg.interview.auth.filter.JwtTokenFilter;
+import cn.minglg.interview.auth.handler.CustomAccessDeniedHandler;
 import cn.minglg.interview.auth.handler.CustomAuthenticationFailureHandler;
 import cn.minglg.interview.auth.handler.CustomAuthenticationSuccessHandler;
+import cn.minglg.interview.auth.handler.CustomLogoutSuccessHandler;
 import cn.minglg.interview.auth.properties.GlobalProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,18 +40,45 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    /**
+     * 登录认证成功自定义处理器
+     */
     private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
+    /**
+     * 登录认证失败自定义处理器
+     */
     private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
+    /**
+     * 登录认证成功，但是对应controller无访问权限自定义处理器
+     */
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
+    /**
+     * 退出成功自定义处理器（前提是处于登录状态）
+     */
+    private final CustomLogoutSuccessHandler customLogoutSuccessHandler;
+    /**
+     * 密钥对
+     */
     private final KeyPair keyPair;
+    /**
+     * 全局配置信息
+     */
     private final GlobalProperties globalProperties;
+    /**
+     * JWT登录认证过滤器
+     */
     private final JwtTokenFilter jwtTokenFilter;
 
     public SecurityConfig(CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler,
                           CustomAuthenticationFailureHandler customAuthenticationFailureHandler,
+                          CustomAccessDeniedHandler customAccessDeniedHandler,
+                          CustomLogoutSuccessHandler customLogoutSuccessHandler,
                           KeyPair keyPair, GlobalProperties globalProperties,
                           JwtTokenFilter jwtTokenFilter) {
         this.customAuthenticationSuccessHandler = customAuthenticationSuccessHandler;
         this.customAuthenticationFailureHandler = customAuthenticationFailureHandler;
+        this.customAccessDeniedHandler = customAccessDeniedHandler;
+        this.customLogoutSuccessHandler = customLogoutSuccessHandler;
         this.keyPair = keyPair;
         this.globalProperties = globalProperties;
         this.jwtTokenFilter = jwtTokenFilter;
@@ -107,15 +136,18 @@ public class SecurityConfig {
                 // 关闭CSRF
                 .csrf(AbstractHttpConfigurer::disable)
                 // 允许跨域（后续使用nginx反向代理无需配置跨域）
-                .cors(cors -> {
-                    cors.configurationSource(configurationSource);
-                })
+                .cors(cors ->
+                        cors.configurationSource(configurationSource))
                 // 前后端分离，无需session
-                .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        .
+                sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // 自定义认证过滤器，替换框架默认的UsernamePasswordAuthenticationFilter
                 .addFilterAt(customAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 // 关键位置：在 SecurityContextHolderFilter之前添加jwtTokenFilter
                 .addFilterBefore(jwtTokenFilter, SecurityContextHolderFilter.class)
+                // 权限不足时执行customAccessDeniedHandler
+                .exceptionHandling(exceptionHandling -> exceptionHandling.accessDeniedHandler(customAccessDeniedHandler))
+                .logout(logout -> logout.logoutUrl(globalProperties.getLogoutUri()).logoutSuccessHandler(customLogoutSuccessHandler))
                 .build();
     }
 

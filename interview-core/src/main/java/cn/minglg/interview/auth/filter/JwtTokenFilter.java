@@ -9,7 +9,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -30,11 +30,11 @@ import java.security.KeyPair;
 @Component
 public class JwtTokenFilter extends OncePerRequestFilter {
     private final KeyPair keyPair;
-    private final RedisTemplate<Object, Object> redisTemplate;
+    private final StringRedisTemplate redisTemplate;
     private final GlobalProperties globalProperties;
 
     public JwtTokenFilter(KeyPair keyPair,
-                          RedisTemplate<Object, Object> redisTemplate,
+                          StringRedisTemplate redisTemplate,
                           GlobalProperties globalProperties) {
         this.keyPair = keyPair;
         this.redisTemplate = redisTemplate;
@@ -55,9 +55,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         response.setContentType("application/json;charset=UTF-8");
-        String requestUri = request.getRequestURI();
         R checkResult = R.builder().code(401).message("请先登录！").build();
-        String securityKey = globalProperties.getSecurityKey();
         // 绿色通道直接放行
         if (this.globalProperties.getWhiteListPatternsAsRequestMatcher().matches(request)) {
             filterChain.doFilter(request, response);
@@ -66,7 +64,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             try {
                 // 解析token，获取userId，和redis比较
                 User user = JwtUtils.verifyJwt(token, keyPair);
-                String redisToken = (String) redisTemplate.opsForHash().get(securityKey, user.getUserId());
+                String authKey = globalProperties.getAuthKeyPrefix() + ":" + user.getUserId();
+                String redisToken = redisTemplate.opsForValue().get(authKey);
                 // 验证通过放行
                 if (redisToken != null && redisToken.equals(token)) {
                     // 要在spring security的上下文中放置一个认证对象。

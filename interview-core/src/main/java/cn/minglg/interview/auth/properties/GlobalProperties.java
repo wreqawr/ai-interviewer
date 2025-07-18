@@ -26,7 +26,8 @@ import java.util.stream.Collectors;
 @Data
 public class GlobalProperties {
     private String loginUri;
-    private String securityKey;
+    private String logoutUri;
+    private String authKeyPrefix;
     private List<String> whiteListPatterns;
     private long timeoutSeconds;
     private long loginTimeoutSeconds;

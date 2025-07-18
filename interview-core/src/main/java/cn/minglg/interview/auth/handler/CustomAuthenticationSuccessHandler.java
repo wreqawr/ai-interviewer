@@ -8,7 +8,7 @@ import cn.minglg.interview.auth.utils.JwtUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -30,10 +30,10 @@ import java.util.concurrent.TimeUnit;
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     private final KeyPair keyPair;
-    private final RedisTemplate<Object, Object> redisTemplate;
+    private final StringRedisTemplate redisTemplate;
     private final GlobalProperties globalProperties;
 
-    public CustomAuthenticationSuccessHandler(KeyPair keyPair, RedisTemplate<Object, Object> redisTemplate, GlobalProperties globalProperties) {
+    public CustomAuthenticationSuccessHandler(KeyPair keyPair, StringRedisTemplate redisTemplate, GlobalProperties globalProperties) {
         this.keyPair = keyPair;
         this.redisTemplate = redisTemplate;
         this.globalProperties = globalProperties;
@@ -53,11 +53,11 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         User user = (User) authentication.getPrincipal();
         // 生成JWT令牌
         long expiration = globalProperties.getJwtExpirationMinutes();
-        String securityKey = globalProperties.getSecurityKey();
+        String authKey = globalProperties.getAuthKeyPrefix() + ":" + user.getUserId();
         String token = JwtUtils.createJwt(user, expiration, keyPair);
         // 登录信息保存至redis
-        redisTemplate.expire(securityKey, expiration, TimeUnit.MINUTES);
-        redisTemplate.opsForHash().put(securityKey, user.getUserId(), token);
+        redisTemplate.opsForValue().set(authKey, token);
+        redisTemplate.expire(authKey, expiration, TimeUnit.MINUTES);
         R result = R.builder().code(200).message("登录成功，欢迎：" + user.getUsername()).build();
         response.setHeader("Authorization", token);
         response.getWriter().write(JSONUtil.toJsonStr(result));

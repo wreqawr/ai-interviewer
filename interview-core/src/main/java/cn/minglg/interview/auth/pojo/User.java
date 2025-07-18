@@ -2,7 +2,6 @@ package cn.minglg.interview.auth.pojo;
 
 import cn.hutool.core.annotation.PropIgnore;
 import cn.minglg.interview.auth.constant.UserStatus;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -41,7 +40,6 @@ public class User implements UserDetails, Serializable {
     private String nickname;
     private String email;
     private UserStatus status;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 
     /**

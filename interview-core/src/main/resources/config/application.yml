@@ -78,8 +78,9 @@ mybatis:
 global:
   login-timeout-seconds: 5
   jwt-expiration-minutes: 10
-  security-key: user:security:login
+  auth-key-prefix: user:security:login
   login-uri: /user/login
+  logout-uri: /user/logout
   # 不会被拦截的请求路径（白名单，支持通配符表达式）
   white-list-patterns:
     - /user/login         # 登录页
