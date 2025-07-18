@@ -1,7 +1,6 @@
 package cn.minglg.interview.auth.mapper;
 
 import cn.minglg.interview.auth.pojo.User;
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -13,7 +12,6 @@ import org.apache.ibatis.annotations.Param;
  * @Create 2025/6/13
  * @Version 1.0
  */
-@Mapper
 public interface UserMapper {
     /**
      * 根据用户名获取用户（包含公司、角色、权限）
