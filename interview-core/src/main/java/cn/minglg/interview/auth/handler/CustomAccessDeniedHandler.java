@@ -1,6 +1,7 @@
 package cn.minglg.interview.auth.handler;
 
 import cn.hutool.json.JSONUtil;
+import cn.minglg.interview.auth.constant.ResponseCode;
 import cn.minglg.interview.auth.response.R;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,7 +36,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
         response.setContentType("application/json;charset=UTF-8");
-        R result = R.builder().code(403).message("权限不足！").build();
+        R result = R.builder().code(ResponseCode.PERMISSION_DENY.getCode()).message("权限不足！").build();
         response.getWriter().write(JSONUtil.toJsonStr(result));
     }
 }

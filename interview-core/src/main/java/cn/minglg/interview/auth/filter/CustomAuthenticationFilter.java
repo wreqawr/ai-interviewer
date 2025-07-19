@@ -1,7 +1,7 @@
 package cn.minglg.interview.auth.filter;
 
 import cn.minglg.interview.auth.exception.InvalidUsernameOrPasswordException;
-import cn.minglg.interview.auth.utils.RsaUtils;
+import cn.minglg.interview.utils.RsaUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,7 +25,7 @@ import java.util.Map;
  * @Version 1.0
  */
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-    public static final String REQUEST_METHOD = "POST";
+    private static final String REQUEST_METHOD = "POST";
     private final long timeoutSeconds;
     private final KeyPair keyPair;
     private final ObjectMapper objectMapper = new ObjectMapper();

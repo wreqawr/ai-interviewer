@@ -1,4 +1,4 @@
-package cn.minglg.interview.auth.utils;
+package cn.minglg.interview.utils;
 
 import cn.hutool.json.JSONConfig;
 import cn.hutool.json.JSONUtil;

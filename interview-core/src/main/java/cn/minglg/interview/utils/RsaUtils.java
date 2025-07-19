@@ -1,4 +1,4 @@
-package cn.minglg.interview.auth.utils;
+package cn.minglg.interview.utils;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.OAEPParameterSpec;

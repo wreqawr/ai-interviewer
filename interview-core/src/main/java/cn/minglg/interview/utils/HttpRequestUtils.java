@@ -1,4 +1,4 @@
-package cn.minglg.interview.auth.utils;
+package cn.minglg.interview.utils;
 
 import jakarta.servlet.http.HttpServletRequest;
 

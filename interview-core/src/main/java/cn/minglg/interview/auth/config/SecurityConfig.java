@@ -1,5 +1,6 @@
 package cn.minglg.interview.auth.config;
 
+import cn.minglg.interview.auth.filter.CaptchaFilter;
 import cn.minglg.interview.auth.filter.CustomAuthenticationFilter;
 import cn.minglg.interview.auth.filter.JwtTokenFilter;
 import cn.minglg.interview.auth.handler.CustomAccessDeniedHandler;
@@ -70,13 +71,18 @@ public class SecurityConfig {
      * JWT登录认证过滤器
      */
     private final JwtTokenFilter jwtTokenFilter;
+    /**
+     * 验证码过滤器
+     */
+    private final CaptchaFilter captchaFilter;
 
     public SecurityConfig(CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler,
                           CustomAuthenticationFailureHandler customAuthenticationFailureHandler,
                           CustomAccessDeniedHandler customAccessDeniedHandler,
                           CustomLogoutSuccessHandler customLogoutSuccessHandler,
                           KeyPair keyPair, GlobalProperties globalProperties,
-                          JwtTokenFilter jwtTokenFilter) {
+                          JwtTokenFilter jwtTokenFilter,
+                          CaptchaFilter captchaFilter) {
         this.customAuthenticationSuccessHandler = customAuthenticationSuccessHandler;
         this.customAuthenticationFailureHandler = customAuthenticationFailureHandler;
         this.customAccessDeniedHandler = customAccessDeniedHandler;
@@ -84,6 +90,7 @@ public class SecurityConfig {
         this.keyPair = keyPair;
         this.globalProperties = globalProperties;
         this.jwtTokenFilter = jwtTokenFilter;
+        this.captchaFilter = captchaFilter;
     }
 
 
@@ -112,8 +119,8 @@ public class SecurityConfig {
 
     @Bean
     public CustomAuthenticationFilter customAuthenticationFilter(AuthenticationManager authenticationManager) {
-        String loginUri = this.globalProperties.getLoginUri();
-        long timeoutSeconds = this.globalProperties.getTimeoutSeconds();
+        String loginUri = this.globalProperties.getAuth().getLoginUri();
+        long timeoutSeconds = this.globalProperties.getAuth().getTimeoutSeconds();
         CustomAuthenticationFilter filter = new CustomAuthenticationFilter(loginUri, timeoutSeconds, keyPair, authenticationManager);
         filter.setAuthenticationSuccessHandler(customAuthenticationSuccessHandler);
         filter.setAuthenticationFailureHandler(customAuthenticationFailureHandler);
@@ -141,15 +148,18 @@ public class SecurityConfig {
                 .cors(cors ->
                         cors.configurationSource(configurationSource))
                 // 前后端分离，无需session
-                        .
-                sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // 自定义认证过滤器，替换框架默认的UsernamePasswordAuthenticationFilter
                 .addFilterAt(customAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 // 关键位置：在 SecurityContextHolderFilter之前添加jwtTokenFilter
                 .addFilterBefore(jwtTokenFilter, SecurityContextHolderFilter.class)
+                // 加入验证码过滤器
+                .addFilterBefore(captchaFilter, CustomAuthenticationFilter.class)
                 // 权限不足时执行customAccessDeniedHandler
                 .exceptionHandling(exceptionHandling -> exceptionHandling.accessDeniedHandler(customAccessDeniedHandler))
-                .logout(logout -> logout.logoutUrl(globalProperties.getLogoutUri()).logoutSuccessHandler(customLogoutSuccessHandler))
+                .logout(logout -> logout
+                        .logoutUrl(globalProperties.getAuth().getLogoutUri())
+                        .logoutSuccessHandler(customLogoutSuccessHandler))
                 .build();
     }
 

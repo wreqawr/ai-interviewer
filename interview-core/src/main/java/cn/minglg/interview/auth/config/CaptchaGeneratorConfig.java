@@ -1,0 +1,49 @@
+package cn.minglg.interview.auth.config;
+
+import cn.hutool.captcha.generator.CodeGenerator;
+import cn.hutool.captcha.generator.MathGenerator;
+import cn.hutool.captcha.generator.RandomGenerator;
+import cn.minglg.interview.auth.properties.GlobalProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+/**
+ * ClassName:CaptchaConfig
+ * Package:cn.minglg.interview.auth.config
+ * Description: 验证码生成器配置类
+ *
+ * @Author kfzx-minglg
+ * @Create 2025/7/18
+ * @Version 1.0
+ */
+@Configuration
+public class CaptchaGeneratorConfig {
+
+    private final GlobalProperties globalProperties;
+
+    public CaptchaGeneratorConfig(GlobalProperties globalProperties) {
+        this.globalProperties = globalProperties;
+    }
+
+    /**
+     * 随机字符验证码生成器
+     *
+     * @return 随机字符验证码生成器
+     */
+    @Bean("randomCodeGenerator")
+    public CodeGenerator randomCodeGenerator() {
+        String baseStr = globalProperties.getCaptcha().getBaseStr();
+        Integer codeCount = globalProperties.getCaptcha().getCodeCount();
+        return new RandomGenerator(baseStr, codeCount);
+    }
+
+    /**
+     * 四则运算验证码生成器
+     *
+     * @return 四则运算验证码生成器
+     */
+    @Bean("mathGenerator")
+    public CodeGenerator mathGenerator() {
+        return new MathGenerator();
+    }
+}

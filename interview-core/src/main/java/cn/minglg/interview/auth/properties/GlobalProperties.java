@@ -25,26 +25,26 @@ import java.util.stream.Collectors;
 @ConfigurationProperties(prefix = "global")
 @Data
 public class GlobalProperties {
-    private String loginUri;
-    private String logoutUri;
-    private String authKeyPrefix;
+    private AuthProperties auth;
     private List<String> whiteListPatterns;
-    private long timeoutSeconds;
-    private long loginTimeoutSeconds;
-    private long jwtExpirationMinutes;
     private RequestMatcher whiteListPatternsAsRequestMatcher;
+    private CaptchaProperties captcha;
 
-
-    /**
-     * 在属性注入后执行该方法，确保whiteListPatternsAsRequestMatcher属性被正确注入
-     */
-    @PostConstruct
-    public void initRequestMatcher() {
+    public void initWhiteListPatternsAsRequestMatcher() {
         whiteListPatterns = whiteListPatterns == null ? Collections.emptyList() : whiteListPatterns;
         this.whiteListPatternsAsRequestMatcher =
                 new OrRequestMatcher(this.getWhiteListPatterns()
                         .stream()
                         .map(AntPathRequestMatcher::new)
                         .collect(Collectors.toList()));
+    }
+
+    /**
+     * 在属性注入后执行该方法，确保相关属性被正确注入
+     */
+    @PostConstruct
+    public void initProperties() {
+        this.initWhiteListPatternsAsRequestMatcher();
+        this.getCaptcha().initEffectivePatternsAsRequestMatcher();
     }
 }

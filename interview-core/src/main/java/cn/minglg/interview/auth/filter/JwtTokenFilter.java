@@ -1,10 +1,11 @@
 package cn.minglg.interview.auth.filter;
 
 import cn.hutool.json.JSONUtil;
+import cn.minglg.interview.auth.constant.ResponseCode;
 import cn.minglg.interview.auth.pojo.User;
 import cn.minglg.interview.auth.properties.GlobalProperties;
 import cn.minglg.interview.auth.response.R;
-import cn.minglg.interview.auth.utils.JwtUtils;
+import cn.minglg.interview.utils.JwtUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -55,7 +56,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         response.setContentType("application/json;charset=UTF-8");
-        R checkResult = R.builder().code(401).message("请先登录！").build();
+        R checkResult = R.builder().code(ResponseCode.JWT_VERIFY_FAIL.getCode()).message("请先登录！").build();
         // 绿色通道直接放行
         if (this.globalProperties.getWhiteListPatternsAsRequestMatcher().matches(request)) {
             filterChain.doFilter(request, response);
@@ -64,7 +65,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             try {
                 // 解析token，获取userId，和redis比较
                 User user = JwtUtils.verifyJwt(token, keyPair);
-                String authKey = globalProperties.getAuthKeyPrefix() + ":" + user.getUserId();
+                String authKey = globalProperties.getAuth().getAuthKeyPrefix() + ":" + user.getUserId();
                 String redisToken = redisTemplate.opsForValue().get(authKey);
                 // 验证通过放行
                 if (redisToken != null && redisToken.equals(token)) {

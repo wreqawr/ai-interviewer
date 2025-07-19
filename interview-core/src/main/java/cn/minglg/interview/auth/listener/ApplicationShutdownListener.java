@@ -30,14 +30,16 @@ public class ApplicationShutdownListener implements ApplicationListener<ContextC
 
     /**
      * 处理应用程序事件。
-     * 当应用程序关闭时，清除redis中所有用户登录信息
+     * 当应用程序关闭时，清除redis中所有用户登录信息、验证码信息
      *
      * @param event 要响应的事件
      */
     @Override
     public void onApplicationEvent(ContextClosedEvent event) {
-        String authKeyPrefix = globalProperties.getAuthKeyPrefix();
+        String authKeyPrefix = globalProperties.getAuth().getAuthKeyPrefix();
+        String captchaKeyPrefix = globalProperties.getCaptcha().getRedisKeyPrefix();
         this.deleteKeysByPrefix(authKeyPrefix);
+        this.deleteKeysByPrefix(captchaKeyPrefix);
     }
 
     /**

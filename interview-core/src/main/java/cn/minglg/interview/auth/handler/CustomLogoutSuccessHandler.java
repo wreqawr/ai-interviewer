@@ -1,10 +1,11 @@
 package cn.minglg.interview.auth.handler;
 
 import cn.hutool.json.JSONUtil;
+import cn.minglg.interview.auth.constant.ResponseCode;
 import cn.minglg.interview.auth.pojo.User;
 import cn.minglg.interview.auth.properties.GlobalProperties;
 import cn.minglg.interview.auth.response.R;
-import cn.minglg.interview.auth.utils.JwtUtils;
+import cn.minglg.interview.utils.JwtUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -48,13 +49,13 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
         R result = null;
         try {
             User user = JwtUtils.verifyJwt(authorization, keyPair);
-            String authKey = globalProperties.getAuthKeyPrefix() + ":" + user.getUserId();
+            String authKey = globalProperties.getAuth().getAuthKeyPrefix() + ":" + user.getUserId();
             // 删除redis中的登录信息
             redisTemplate.delete(authKey);
             response.setContentType("application/json;charset=UTF-8");
-            result = R.builder().code(200).message("账号：" + user.getUsername() + "退出成功！").build();
+            result = R.builder().code(ResponseCode.OK.getCode()).message("账号：" + user.getUsername() + "退出成功！").build();
         } catch (Exception e) {
-            result = R.builder().code(200).message("账号退出失败，原因为：" + e.getMessage()).build();
+            result = R.builder().code(ResponseCode.LOGOUT_FAIL.getCode()).message("账号退出失败，原因为：" + e.getMessage()).build();
         } finally {
             response.getWriter().write(JSONUtil.toJsonStr(result));
         }

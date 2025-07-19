@@ -1,6 +1,5 @@
 package cn.minglg.interview.auth.controller;
 
-import cn.minglg.interview.auth.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,7 +7,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.security.KeyPair;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,12 +22,11 @@ import java.util.Map;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-    private final UserService userService;
     private final String publicKeyPem;
 
+
     @Autowired
-    public UserController(UserService userService, String publicKeyPem, KeyPair keyPair) {
-        this.userService = userService;
+    public UserController(String publicKeyPem) {
         this.publicKeyPem = publicKeyPem;
     }
 
@@ -39,6 +36,7 @@ public class UserController {
         map.put("publicKey", publicKeyPem);
         return new ResponseEntity<>(map, HttpStatus.OK);
     }
+
 /*
     @PostMapping("/aa")
     public ResponseEntity<Object> login(@RequestBody UserPayload payload, HttpServletRequest request) throws Exception {

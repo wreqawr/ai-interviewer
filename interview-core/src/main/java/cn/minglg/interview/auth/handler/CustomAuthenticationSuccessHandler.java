@@ -1,10 +1,11 @@
 package cn.minglg.interview.auth.handler;
 
 import cn.hutool.json.JSONUtil;
+import cn.minglg.interview.auth.constant.ResponseCode;
 import cn.minglg.interview.auth.pojo.User;
 import cn.minglg.interview.auth.properties.GlobalProperties;
 import cn.minglg.interview.auth.response.R;
-import cn.minglg.interview.auth.utils.JwtUtils;
+import cn.minglg.interview.utils.JwtUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -52,13 +53,13 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         response.setContentType("application/json;charset=UTF-8");
         User user = (User) authentication.getPrincipal();
         // 生成JWT令牌
-        long expiration = globalProperties.getJwtExpirationMinutes();
-        String authKey = globalProperties.getAuthKeyPrefix() + ":" + user.getUserId();
+        long expiration = globalProperties.getAuth().getJwtExpirationMinutes();
+        String authKey = globalProperties.getAuth().getAuthKeyPrefix() + ":" + user.getUserId();
         String token = JwtUtils.createJwt(user, expiration, keyPair);
         // 登录信息保存至redis
         redisTemplate.opsForValue().set(authKey, token);
         redisTemplate.expire(authKey, expiration, TimeUnit.MINUTES);
-        R result = R.builder().code(200).message("登录成功，欢迎：" + user.getUsername()).build();
+        R result = R.builder().code(ResponseCode.OK.getCode()).message("登录成功，欢迎：" + user.getUsername()).build();
         response.setHeader("Authorization", token);
         response.getWriter().write(JSONUtil.toJsonStr(result));
     }

@@ -1,6 +1,7 @@
 package cn.minglg.interview.auth.handler;
 
 import cn.hutool.json.JSONUtil;
+import cn.minglg.interview.auth.constant.ResponseCode;
 import cn.minglg.interview.auth.response.R;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,7 +33,7 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         response.setContentType("application/json;charset=UTF-8");
-        R result = R.builder().code(401).message("登录失败：" + exception.getMessage()).build();
+        R result = R.builder().code(ResponseCode.AUTH_FAIL.getCode()).message("登录失败：" + exception.getMessage()).build();
         response.getWriter().write(JSONUtil.toJsonStr(result));
     }
 }
