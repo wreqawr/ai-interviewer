@@ -57,7 +57,6 @@ public class CaptchaFilter extends OncePerRequestFilter {
 
                 // 验证成功则放行
                 if (verifyResult) {
-                    System.out.println("验证码认证成功！");
                     filterChain.doFilter(request, response);
                 } else {
                     response.getWriter().write(JSONUtil.toJsonStr(checkResult));

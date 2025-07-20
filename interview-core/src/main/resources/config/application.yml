@@ -97,9 +97,9 @@ global:
   # 验证码信息
   captcha:
     # 验证码宽度
-    width: 100
+    width: 120
     # 验证码高度
-    height: 30
+    height: 40
     # 验证码数字个数
     codeCount: 4
     # 干扰元素个数

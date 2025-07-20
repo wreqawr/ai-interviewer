@@ -3,6 +3,7 @@ package cn.minglg.interview.auth.config;
 import cn.minglg.interview.auth.filter.CaptchaFilter;
 import cn.minglg.interview.auth.filter.CustomAuthenticationFilter;
 import cn.minglg.interview.auth.filter.JwtTokenFilter;
+import cn.minglg.interview.auth.filter.RequestBodyCacheFilter;
 import cn.minglg.interview.auth.handler.CustomAccessDeniedHandler;
 import cn.minglg.interview.auth.handler.CustomAuthenticationFailureHandler;
 import cn.minglg.interview.auth.handler.CustomAuthenticationSuccessHandler;
@@ -75,6 +76,10 @@ public class SecurityConfig {
      * 验证码过滤器
      */
     private final CaptchaFilter captchaFilter;
+    /**
+     * 包装request的filter
+     */
+    private final RequestBodyCacheFilter requestBodyCacheFilter;
 
     public SecurityConfig(CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler,
                           CustomAuthenticationFailureHandler customAuthenticationFailureHandler,
@@ -82,7 +87,8 @@ public class SecurityConfig {
                           CustomLogoutSuccessHandler customLogoutSuccessHandler,
                           KeyPair keyPair, GlobalProperties globalProperties,
                           JwtTokenFilter jwtTokenFilter,
-                          CaptchaFilter captchaFilter) {
+                          CaptchaFilter captchaFilter,
+                          RequestBodyCacheFilter requestBodyCacheFilter) {
         this.customAuthenticationSuccessHandler = customAuthenticationSuccessHandler;
         this.customAuthenticationFailureHandler = customAuthenticationFailureHandler;
         this.customAccessDeniedHandler = customAccessDeniedHandler;
@@ -91,6 +97,7 @@ public class SecurityConfig {
         this.globalProperties = globalProperties;
         this.jwtTokenFilter = jwtTokenFilter;
         this.captchaFilter = captchaFilter;
+        this.requestBodyCacheFilter = requestBodyCacheFilter;
     }
 
 
@@ -155,6 +162,8 @@ public class SecurityConfig {
                 .addFilterBefore(jwtTokenFilter, SecurityContextHolderFilter.class)
                 // 加入验证码过滤器
                 .addFilterBefore(captchaFilter, CustomAuthenticationFilter.class)
+                // 加入request包装过滤器
+                .addFilterBefore(requestBodyCacheFilter, JwtTokenFilter.class)
                 // 权限不足时执行customAccessDeniedHandler
                 .exceptionHandling(exceptionHandling -> exceptionHandling.accessDeniedHandler(customAccessDeniedHandler))
                 .logout(logout -> logout

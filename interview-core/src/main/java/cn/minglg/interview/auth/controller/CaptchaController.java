@@ -35,6 +35,8 @@ public class CaptchaController {
             String captchaId = (String) captcha.get("captchaId");
             ICaptcha captchaImage = (ICaptcha) captcha.get("captchaImage");
             response.setHeader("captchaId", captchaId);
+            // 关键：暴露自定义header
+            response.setHeader("Access-Control-Expose-Headers", "captchaId");
             captchaImage.write(outputStream);
         }
     }

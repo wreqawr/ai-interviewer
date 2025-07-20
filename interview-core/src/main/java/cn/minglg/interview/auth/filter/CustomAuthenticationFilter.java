@@ -43,15 +43,15 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
             throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
         }
         // 从JSON请求体中解析用户名和密码
-        Map<String, String> authData = null;
+        Map<?, ?> authData;
         try {
             authData = objectMapper.readValue(request.getInputStream(), Map.class);
         } catch (Exception e) {
             throw new AuthenticationServiceException("Failed to parse authentication request body");
         }
-        String username = authData.get("username");
+        String username = (String) authData.get("username");
         username = (username != null) ? username.trim() : "";
-        String encryptMessage = authData.get("password");
+        String encryptMessage = (String) authData.get("password");
         encryptMessage = (encryptMessage != null) ? encryptMessage : "";
         String decryptMessage;
         String decryptPassword;
