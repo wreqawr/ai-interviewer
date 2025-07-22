@@ -20,4 +20,11 @@ public interface CompanyMapper {
      * @return 公司信息
      */
     Company getCompanyByUserId(@Param("userId") Long userId);
+
+    /**
+     * 获取或创建公司ID
+     *
+     * @param company 公司对象
+     */
+    void upsertCompany(@Param("company") Company company);
 }

@@ -28,4 +28,11 @@ public interface UserMapper {
      * @return 用户基本信息
      */
     User getBasicUserByUserName(@Param("userName") String userName);
+
+    /**
+     * 添加用户
+     *
+     * @param user 用户信息
+     */
+    void addUser(@Param("user") User user);
 }

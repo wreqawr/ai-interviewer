@@ -38,8 +38,10 @@ public class ApplicationShutdownListener implements ApplicationListener<ContextC
     public void onApplicationEvent(ContextClosedEvent event) {
         String authKeyPrefix = globalProperties.getAuth().getAuthKeyPrefix();
         String captchaKeyPrefix = globalProperties.getCaptcha().getRedisKeyPrefix();
+        String roleRedisKeyPrefix = globalProperties.getRegister().getRoleRedisKeyPrefix();
         this.deleteKeysByPrefix(authKeyPrefix);
         this.deleteKeysByPrefix(captchaKeyPrefix);
+        this.deleteKeysByPrefix(roleRedisKeyPrefix);
     }
 
     /**

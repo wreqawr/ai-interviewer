@@ -1,5 +1,7 @@
 package cn.minglg.interview.utils;
 
+import cn.minglg.interview.auth.exception.InvalidUsernameOrPasswordException;
+
 import javax.crypto.Cipher;
 import javax.crypto.spec.OAEPParameterSpec;
 import javax.crypto.spec.PSource;
@@ -52,6 +54,25 @@ public class RsaUtils {
         cipher.init(Cipher.DECRYPT_MODE, privateKey, oaepParams);
         byte[] decryptedBytes = cipher.doFinal(Base64.getDecoder().decode(message));
         return new String(decryptedBytes);
+    }
+
+    public static String decrypt(String message, PrivateKey privateKey, long timeoutSeconds) throws Exception {
+        String decryptMessage;
+        String decryptPassword;
+        long requestTimestamp;
+
+        try {
+            decryptMessage = RsaUtils.decrypt(message, privateKey);
+            decryptPassword = decryptMessage.substring(0, decryptMessage.length() - 20);
+            requestTimestamp = Long.parseLong(decryptMessage.substring(decryptMessage.length() - 20));
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+        long currentTimestamp = System.currentTimeMillis() / 1000;
+        if (currentTimestamp - requestTimestamp > timeoutSeconds) {
+            throw new InvalidUsernameOrPasswordException("用户名或密码不正确！");
+        }
+        return decryptPassword;
     }
 
 }

@@ -1,6 +1,5 @@
 package cn.minglg.interview.auth.pojo;
 
-import cn.hutool.core.annotation.PropIgnore;
 import cn.minglg.interview.auth.constant.UserRole;
 import lombok.Data;
 
@@ -17,7 +16,6 @@ import java.util.List;
  */
 @Data
 public class Role {
-    @PropIgnore
     private Integer roleId;
     private UserRole roleName;
     private String description;

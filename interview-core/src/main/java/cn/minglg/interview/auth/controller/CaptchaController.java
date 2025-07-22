@@ -21,13 +21,13 @@ import java.util.Map;
  */
 @RestController
 public class CaptchaController {
-    private CaptchaService captchaService;
+    private final CaptchaService captchaService;
 
     public CaptchaController(CaptchaService captchaService) {
         this.captchaService = captchaService;
     }
 
-    @GetMapping("/captcha")
+    @GetMapping("/api/auth/captcha")
     public void getCaptcha(HttpServletResponse response) throws IOException {
         response.setContentType("image/jpeg");
         Map<String, Object> captcha = captchaService.generateCaptcha();
@@ -35,8 +35,6 @@ public class CaptchaController {
             String captchaId = (String) captcha.get("captchaId");
             ICaptcha captchaImage = (ICaptcha) captcha.get("captchaImage");
             response.setHeader("captchaId", captchaId);
-            // 关键：暴露自定义header
-            response.setHeader("Access-Control-Expose-Headers", "captchaId");
             captchaImage.write(outputStream);
         }
     }

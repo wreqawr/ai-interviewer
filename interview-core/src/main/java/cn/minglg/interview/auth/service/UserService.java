@@ -1,8 +1,8 @@
 package cn.minglg.interview.auth.service;
 
+import cn.minglg.interview.auth.pojo.User;
+import cn.minglg.interview.auth.response.R;
 import org.springframework.security.core.userdetails.UserDetailsService;
-
-import java.util.Map;
 
 /**
  * ClassName:UserService
@@ -16,22 +16,10 @@ import java.util.Map;
 public interface UserService extends UserDetailsService {
 
     /**
-     * 用户登录
-     *
-     * @param user 用户信息
-     * @return 登录结果
-     */
-    //Map<String, Object> userLogin(User user) throws Exception;
-
-    /**
      * 添加用户
      *
      * @param user 用户信息
      * @return 执行结果
      */
-    //Map<String, Object> addUser(User user);
-
-    Map<String, Object> needLogin(String token, String params);
-
-    Map<String, Object> notNeedLogin(String params);
+    R register(User user);
 }

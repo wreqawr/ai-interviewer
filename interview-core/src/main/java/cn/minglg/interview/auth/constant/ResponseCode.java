@@ -23,6 +23,8 @@ public enum ResponseCode {
     CAPTCHA_VERIFY_FAIL(202, "验证码认证失败"),
     // 退出失败
     LOGOUT_FAIL(203, "退出失败"),
+    // 注册失败
+    REGISTER_FAIL(204, "注册失败"),
     // 登录认证失败
     AUTH_FAIL(401, "登录认证失败"),
     // 权限不足

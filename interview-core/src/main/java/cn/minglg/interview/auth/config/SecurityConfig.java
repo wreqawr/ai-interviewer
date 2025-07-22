@@ -113,6 +113,8 @@ public class SecurityConfig {
         corsConfiguration.setAllowedMethods(List.of("*"));
         //允许任何的请求头 (jwt)
         corsConfiguration.setAllowedHeaders(List.of("*"));
+        // 暴露响应头
+        corsConfiguration.setExposedHeaders(List.of("captchaId", "Authorization"));
 
         //注册跨域配置
         urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
@@ -127,7 +129,7 @@ public class SecurityConfig {
     @Bean
     public CustomAuthenticationFilter customAuthenticationFilter(AuthenticationManager authenticationManager) {
         String loginUri = this.globalProperties.getAuth().getLoginUri();
-        long timeoutSeconds = this.globalProperties.getAuth().getTimeoutSeconds();
+        long timeoutSeconds = this.globalProperties.getAuth().getRequestTimeoutSeconds();
         CustomAuthenticationFilter filter = new CustomAuthenticationFilter(loginUri, timeoutSeconds, keyPair, authenticationManager);
         filter.setAuthenticationSuccessHandler(customAuthenticationSuccessHandler);
         filter.setAuthenticationFailureHandler(customAuthenticationFailureHandler);

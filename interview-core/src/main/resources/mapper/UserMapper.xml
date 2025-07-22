@@ -38,4 +38,28 @@
         FROM t_user
         WHERE username = #{userName}
     </select>
+
+    <!-- 添加用户 -->
+    <insert id="addUser" parameterType="cn.minglg.interview.auth.pojo.User">
+        INSERT INTO t_user (
+        username,
+        password,
+        nickname,
+        email,
+        status,
+        created_at
+        ) VALUES (
+        #{user.username},
+        #{user.password},
+        #{user.nickname},
+        #{user.email},
+        'NORMAL',
+        NOW()
+        )
+
+        <!-- 获取自增主键 -->
+        <selectKey keyProperty="user.userId" resultType="java.lang.Long" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
 </mapper>

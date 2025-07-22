@@ -22,4 +22,11 @@ public interface RoleMapper {
      * @return 角色列表
      */
     List<Role> getRoleListByUserId(@Param("userId") Long userId);
+
+    /**
+     * 获取所有角色列表
+     *
+     * @return 角色列表
+     */
+    List<Role> getAllRoleList();
 }

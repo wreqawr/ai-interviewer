@@ -56,9 +56,8 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         long expiration = globalProperties.getAuth().getJwtExpirationMinutes();
         String authKey = globalProperties.getAuth().getAuthKeyPrefix() + ":" + user.getUserId();
         String token = JwtUtils.createJwt(user, expiration, keyPair);
-        // 登录信息保存至redis
-        redisTemplate.opsForValue().set(authKey, token);
-        redisTemplate.expire(authKey, expiration, TimeUnit.MINUTES);
+        // 登录信息保存至redis，并设置过期时间
+        redisTemplate.opsForValue().set(authKey, token, expiration, TimeUnit.MINUTES);
         R result = R.builder().code(ResponseCode.OK.getCode()).message("登录成功，欢迎：" + user.getUsername()).build();
         response.setHeader("Authorization", token);
         response.getWriter().write(JSONUtil.toJsonStr(result));

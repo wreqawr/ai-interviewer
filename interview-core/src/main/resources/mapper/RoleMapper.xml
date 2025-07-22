@@ -19,4 +19,9 @@
                  JOIN t_user_role tur ON tr.role_id = tur.role_id
         WHERE tur.user_id = #{userId}
     </select>
+
+    <select id="getAllRoleList" resultMap="roleMap">
+        SELECT *
+        FROM t_role
+    </select>
 </mapper>

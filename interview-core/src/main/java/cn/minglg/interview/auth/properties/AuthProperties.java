@@ -29,14 +29,11 @@ public class AuthProperties {
      * 登录认证信息存储在redis中的key前缀
      */
     private String authKeyPrefix;
+
     /**
      * 登录请求超时时间（秒）
      */
-    private long timeoutSeconds;
-    /**
-     * 登录请求超时时间（秒）
-     */
-    private long loginTimeoutSeconds;
+    private long requestTimeoutSeconds;
     /**
      * jwt/redis过期时间（分）
      */

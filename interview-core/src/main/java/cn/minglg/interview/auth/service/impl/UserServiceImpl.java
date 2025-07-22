@@ -1,17 +1,26 @@
 package cn.minglg.interview.auth.service.impl;
 
-import cn.minglg.interview.auth.mapper.UserMapper;
+import cn.hutool.json.JSONUtil;
+import cn.minglg.interview.auth.constant.ResponseCode;
+import cn.minglg.interview.auth.mapper.*;
+import cn.minglg.interview.auth.pojo.Company;
+import cn.minglg.interview.auth.pojo.Role;
 import cn.minglg.interview.auth.pojo.User;
+import cn.minglg.interview.auth.properties.GlobalProperties;
+import cn.minglg.interview.auth.response.R;
 import cn.minglg.interview.auth.service.UserService;
+import cn.minglg.interview.utils.RsaUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.KeyPair;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * ClassName:UserServiceImpl
@@ -25,67 +34,97 @@ import java.util.Map;
 @Service
 public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
+    private final RoleMapper roleMapper;
+    private final UserRoleMapper userRoleMapper;
+    private final UserCompanyMapper userCompanyMapper;
+    private final CompanyMapper companyMapper;
     private final PasswordEncoder passwordEncoder;
     private final KeyPair keyPair;
+    private final StringRedisTemplate redisTemplate;
+    private final GlobalProperties globalProperties;
 
     @Autowired
     public UserServiceImpl(UserMapper userMapper,
+                           RoleMapper roleMapper,
+                           UserRoleMapper userRoleMapper,
+                           CompanyMapper companyMapper,
+                           UserCompanyMapper userCompanyMapper,
                            PasswordEncoder passwordEncoder,
-                           KeyPair keyPair) {
+                           KeyPair keyPair,
+                           StringRedisTemplate redisTemplate,
+                           GlobalProperties globalProperties) {
         this.userMapper = userMapper;
+        this.roleMapper = roleMapper;
+        this.userRoleMapper = userRoleMapper;
+        this.companyMapper = companyMapper;
+        this.userCompanyMapper = userCompanyMapper;
         this.passwordEncoder = passwordEncoder;
         this.keyPair = keyPair;
+        this.redisTemplate = redisTemplate;
+        this.globalProperties = globalProperties;
     }
 
-/*
+
     @Override
-    public Map<String, Object> addUser(User user) {
-        Map<String, Object> resultMap = new HashMap<>();
-        String message = "添加失败，无效的角色：%s！".formatted(user.getRoles().get(0).getRoleName());
-        // 不允许添加管理员用户
-        if (UserRole.ROLE_ADMIN == user.getRoles().get(0).getRoleName()) {
-            resultMap.put("success", false);
-            resultMap.put("message", message);
-            return resultMap;
+    @Transactional(rollbackFor = Exception.class)
+    public R register(User user) {
+        String registerRoleName = user.getRoles().get(0).getRoleName().toString();
+        // 首先获取所有的角色列表（优先从redis获取，如果获取不到再从mysql获取）
+        // 防止添加无效角色
+        String redisRoleKey = globalProperties.getRegister().getRoleRedisKeyPrefix() + ":" + registerRoleName;
+        String roleStr = redisTemplate.opsForValue().get(redisRoleKey);
+        if (roleStr == null) {
+            roleMapper.getAllRoleList()
+                    .forEach(role -> {
+                        String roleKey = globalProperties.getRegister().getRoleRedisKeyPrefix() + ":" + role.getRoleName();
+                        String roleValue = JSONUtil.toJsonStr(role);
+                        redisTemplate.opsForValue().set(roleKey, roleValue);
+                    });
         }
+        roleStr = redisTemplate.opsForValue().get(redisRoleKey);
+        // 角色不存在或者是不允许注册的角色
+        List<String> notAllowRoles = globalProperties.getRegister().getNotAllowRoles();
+        if (roleStr == null || notAllowRoles.contains(registerRoleName)) {
+            return R.builder()
+                    .code(ResponseCode.REGISTER_FAIL.getCode())
+                    .message("注册失败，无效的角色：" + registerRoleName).build();
+        }
+        // 处理nickname
+        String nickname = user.getNickname();
+        if (nickname == null || nickname.trim().isEmpty()) {
+            user.setNickname("用户" + UUID.randomUUID().toString().replace("-", "").substring(0, 10));
+        }
+        // 对前端传输过来的密码进行相应处理
+        long timeoutSeconds = globalProperties.getAuth().getRequestTimeoutSeconds();
+        String encryptMessage = user.getPassword();
         try {
-            String decrypt = RsaUtils.decrypt(user.getPassword(), keyPair.getPrivate());
-            String passwordHash = passwordEncoder.encode(decrypt.substring(0, decrypt.length() - 20));
-            user.setPassword(passwordHash);
+            String decryptPassword = RsaUtils.decrypt(encryptMessage, keyPair.getPrivate(), timeoutSeconds);
+            Integer roleId = JSONUtil.toBean(roleStr, Role.class).getRoleId();
+            String encryptPassword = passwordEncoder.encode(decryptPassword);
+            user.setPassword(encryptPassword);
+            // 第一步：添加用户基本信息，并返回用户id
             userMapper.addUser(user);
-            message = "添加成功！";
-            resultMap.put("success", true);
-        } catch (Exception e) {
-            message = e.getMessage();
-            resultMap.put("success", false);
-        } finally {
-            resultMap.put("message", message);
-        }
-        return resultMap;
-    }
-*/
-    @Override
-    public Map<String, Object> needLogin(String token, String params) {
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("message", params);
-        if ("hh".equals(params)) {
-            resultMap.put("success", false);
-        } else {
-            resultMap.put("success", true);
-        }
-        return resultMap;
-    }
+            Long userId = user.getUserId();
+            // 第二步：添加用户-角色映射信息
+            userRoleMapper.addUserRole(userId, roleId);
+            // 第三步：判断是否有公司信息需要添加，如有，也应该一并添加
+            Company company = user.getCompany();
+            if (company != null) {
+                String companyName = user.getCompany().getCompanyName();
+                if (companyName != null && !companyName.trim().isEmpty()) {
+                    // 第四步：获取公司的id
+                    companyMapper.upsertCompany(company);
+                    Long companyId = company.getCompanyId();
+                    // 第五步：添加用户-公司映射关系
+                    userCompanyMapper.addUserCompany(userId, companyId);
+                }
+            }
+            return R.builder().code(ResponseCode.OK.getCode()).message("注册成功！").build();
 
-    @Override
-    public Map<String, Object> notNeedLogin(String params) {
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("message", params);
-        if ("hh".equals(params)) {
-            resultMap.put("success", false);
-        } else {
-            resultMap.put("success", true);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        return resultMap;
+
     }
 
     /**

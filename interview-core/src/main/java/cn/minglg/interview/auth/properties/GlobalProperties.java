@@ -29,6 +29,7 @@ public class GlobalProperties {
     private List<String> whiteListPatterns;
     private RequestMatcher whiteListPatternsAsRequestMatcher;
     private CaptchaProperties captcha;
+    private RegisterProperties register;
 
     public void initWhiteListPatternsAsRequestMatcher() {
         whiteListPatterns = whiteListPatterns == null ? Collections.emptyList() : whiteListPatterns;

@@ -1,6 +1,5 @@
 package cn.minglg.interview.auth.filter;
 
-import cn.minglg.interview.auth.exception.InvalidUsernameOrPasswordException;
 import cn.minglg.interview.utils.RsaUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -53,20 +52,11 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         username = (username != null) ? username.trim() : "";
         String encryptMessage = (String) authData.get("password");
         encryptMessage = (encryptMessage != null) ? encryptMessage : "";
-        String decryptMessage;
         String decryptPassword;
-        long requestTimestamp;
-
         try {
-            decryptMessage = RsaUtils.decrypt(encryptMessage, keyPair.getPrivate());
-            decryptPassword = decryptMessage.substring(0, decryptMessage.length() - 20);
-            requestTimestamp = Long.parseLong(decryptMessage.substring(decryptMessage.length() - 20));
+            decryptPassword = RsaUtils.decrypt(encryptMessage, keyPair.getPrivate(), timeoutSeconds);
         } catch (Exception e) {
-            throw new InvalidUsernameOrPasswordException("用户名或密码不正确！");
-        }
-        long currentTimestamp = System.currentTimeMillis() / 1000;
-        if (currentTimestamp - requestTimestamp > timeoutSeconds) {
-            throw new InvalidUsernameOrPasswordException("用户名或密码不正确！");
+            throw new RuntimeException(e);
         }
         UsernamePasswordAuthenticationToken authRequest = UsernamePasswordAuthenticationToken.unauthenticated(username,
                 decryptPassword);

@@ -1,11 +1,13 @@
 package cn.minglg.interview.auth.controller;
 
+import cn.minglg.interview.auth.constant.ResponseCode;
+import cn.minglg.interview.auth.pojo.User;
+import cn.minglg.interview.auth.response.R;
+import cn.minglg.interview.auth.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,14 +22,17 @@ import java.util.Map;
  * @Version 1.0
  */
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/auth")
 public class UserController {
     private final String publicKeyPem;
+    private final UserService userService;
 
 
     @Autowired
-    public UserController(String publicKeyPem) {
+    public UserController(String publicKeyPem,
+                          UserService userService) {
         this.publicKeyPem = publicKeyPem;
+        this.userService = userService;
     }
 
     @GetMapping("/publicKey")
@@ -37,37 +42,31 @@ public class UserController {
         return new ResponseEntity<>(map, HttpStatus.OK);
     }
 
-/*
-    @PostMapping("/aa")
-    public ResponseEntity<Object> login(@RequestBody UserPayload payload, HttpServletRequest request) throws Exception {
-        User user = new User();
-        user.setUsername(payload.getUsername());
-        user.setPasswordHash(payload.getPassword());
-        user.setLastLoginIp(HttpRequestUtils.getClientIpAddress(request));
-        Map<String, Object> body = this.userService.userLogin(user);
-        String uuid = body.get("uuid") == null ? UUID.randomUUID().toString() : (String) body.remove("uuid");
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", uuid);
-        // 关键：声明暴露头
-        headers.setAccessControlExposeHeaders(Collections.singletonList("Authorization"));
-        return new ResponseEntity<>(body, headers, HttpStatus.OK);
-    }
-
+    /**
+     * 用户注册
+     *
+     * @param user 用户信息
+     * @return 注册结果通知
+     */
     @PostMapping("/register")
-    public ResponseEntity<Object> register(@RequestBody UserPayload payload, HttpServletRequest request) {
-        User user = User.builder()
-                .username(payload.getUsername())
-                .passwordHash(payload.getPassword())
-                .nickname(payload.getNickname() == null ? String.valueOf(UUID.randomUUID()) : payload.getNickname())
-                .role(payload.getRole() == null ? UserRole.ROLE_JOB_SEEKER : payload.getRole())
-                .status(UserStatus.NORMAL)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .lastLoginIp(HttpRequestUtils.getClientIpAddress(request))
-                .build();
-        return new ResponseEntity<>(this.userService.addUser(user), HttpStatus.OK);
+    public ResponseEntity<R> register(@RequestBody User user) {
+        /*
+          必填项：
+            用户名、密码、邮箱、角色
+          选填项：
+            昵称、公司名称
+          默认项：
+            状态、注册时间
+         */
+        R result;
+        try {
+            result = userService.register(user);
+        } catch (Exception e) {
+            result = R.builder().code(ResponseCode.REGISTER_FAIL.getCode()).message(e.getMessage()).build();
+        }
+        return new ResponseEntity<>(result, HttpStatus.OK);
+
     }
-*/
 
 
 }

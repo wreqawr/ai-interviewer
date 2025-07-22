@@ -14,4 +14,13 @@
                  JOIN t_user_company tuc ON tc.company_id = tuc.company_id
         WHERE tuc.user_id = #{userId}
     </select>
+
+    <insert id="upsertCompany" parameterType="cn.minglg.interview.auth.pojo.Company" useGeneratedKeys="true"
+            keyProperty="company.companyId">
+        INSERT INTO t_company (company_name)
+        VALUES (#{company.companyName})
+        ON DUPLICATE KEY UPDATE company_id = LAST_INSERT_ID(company_id)
+    </insert>
+
+
 </mapper>

@@ -79,21 +79,22 @@ global:
   # 认证信息相关
   auth:
     # 登录请求超时时间（秒）
-    login-timeout-seconds: 5
+    request-timeout-seconds: 5000
     # jwt/redis过期时间（分）
     jwt-expiration-minutes: 10
     # 登录认证信息存储在redis中的key前缀
     auth-key-prefix: user:security:login
     # 登录页
-    login-uri: /user/login
+    login-uri: /api/auth/login
     # 退出页
-    logout-uri: /user/logout
+    logout-uri: /api/auth/logout
   # 不会被拦截的请求路径（白名单，支持通配符表达式）
   white-list-patterns:
-    - /user/login         # 登录页
-    - /user/publicKey     # 获取公钥
-    - /captcha            # 验证码
-    - /actuator/**        # 可观测性监控
+    - /api/auth/login         # 登录页
+    - /api/auth/register      # 注册页
+    - /api/auth/publicKey     # 获取公钥
+    - /api/auth/captcha       # 验证码
+    - /actuator/**            # 可观测性监控
   # 验证码信息
   captcha:
     # 验证码宽度
@@ -112,8 +113,15 @@ global:
     redis-key-expire-minutes: 5
     # 需要使用验证码的请求路径
     effective-patterns:
-      - /user/login
-      - /user/register
+      - /api/auth/login
+      - /api/auth/register
+
+  register:
+    # redis中保存的所有角色字典信息的key前缀
+    role-redis-key-prefix: role:list
+    # 不允许注册的角色列表
+    not-allow-roles:
+      - ROLE_ADMIN
 
 
 
