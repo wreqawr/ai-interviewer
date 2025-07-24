@@ -2,9 +2,9 @@ package cn.minglg.interview.auth.service.impl;
 
 import cn.hutool.captcha.ICaptcha;
 import cn.hutool.captcha.generator.CodeGenerator;
-import cn.minglg.interview.auth.properties.GlobalProperties;
 import cn.minglg.interview.auth.service.CaptchaService;
-import cn.minglg.interview.utils.CaptchaUtils;
+import cn.minglg.interview.common.properties.GlobalProperties;
+import cn.minglg.interview.common.utils.CaptchaUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;

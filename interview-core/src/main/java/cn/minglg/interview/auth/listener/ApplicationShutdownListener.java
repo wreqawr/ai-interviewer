@@ -1,6 +1,6 @@
 package cn.minglg.interview.auth.listener;
 
-import cn.minglg.interview.auth.properties.GlobalProperties;
+import cn.minglg.interview.common.properties.GlobalProperties;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.data.redis.core.Cursor;

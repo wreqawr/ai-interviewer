@@ -1,6 +1,6 @@
 package cn.minglg.interview.auth.filter;
 
-import cn.minglg.interview.utils.RsaUtils;
+import cn.minglg.interview.common.utils.RsaUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

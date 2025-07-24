@@ -1,10 +1,10 @@
 package cn.minglg.interview.auth.filter;
 
 import cn.hutool.json.JSONUtil;
-import cn.minglg.interview.auth.constant.ResponseCode;
-import cn.minglg.interview.auth.properties.GlobalProperties;
 import cn.minglg.interview.auth.response.R;
-import cn.minglg.interview.utils.CaptchaUtils;
+import cn.minglg.interview.common.constant.ResponseCode;
+import cn.minglg.interview.common.properties.GlobalProperties;
+import cn.minglg.interview.common.utils.CaptchaUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -47,7 +47,7 @@ public class CaptchaFilter extends OncePerRequestFilter {
         RequestMatcher requestMatcher = this.globalProperties.getCaptcha().getEffectivePatternsAsRequestMatcher();
         String captchaRedisKey = null;
         try {
-            // 只有需要验证码的请求才回拦截，不需要验证码的请求路径直接放行
+            // 只有需要验证码的请求才会拦截，不需要验证码的请求路径直接放行
             if (requestMatcher.matches(request)) {
                 captchaRedisKey = globalProperties.getCaptcha().getRedisKeyPrefix() + ":" + request.getHeader("captchaId");
                 String answer = redisTemplate.opsForValue().get(captchaRedisKey);

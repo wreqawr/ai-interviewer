@@ -36,6 +36,13 @@ public class RequestBodyCacheFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        String contentType = request.getContentType();
+        // 1. 放行 multipart/form-data（文件上传）请求
+        String contentTypePrefix = "multipart/";
+        if (contentType != null && contentType.toLowerCase().startsWith(contentTypePrefix)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         CachedBodyHttpServletRequestWrapper cachedBodyHttpServletRequestWrapper = new CachedBodyHttpServletRequestWrapper(request);
         filterChain.doFilter(cachedBodyHttpServletRequestWrapper, response);
     }

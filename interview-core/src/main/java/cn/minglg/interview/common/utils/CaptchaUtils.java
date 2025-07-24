@@ -1,11 +1,11 @@
-package cn.minglg.interview.utils;
+package cn.minglg.interview.common.utils;
 
 import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.ICaptcha;
 import cn.hutool.captcha.generator.CodeGenerator;
 import cn.hutool.captcha.generator.MathGenerator;
 import cn.hutool.core.math.Calculator;
-import cn.minglg.interview.auth.properties.GlobalProperties;
+import cn.minglg.interview.common.properties.GlobalProperties;
 
 import java.util.Map;
 

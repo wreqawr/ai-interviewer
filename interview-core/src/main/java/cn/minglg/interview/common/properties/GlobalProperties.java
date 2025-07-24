@@ -1,4 +1,4 @@
-package cn.minglg.interview.auth.properties;
+package cn.minglg.interview.common.properties;
 
 import jakarta.annotation.PostConstruct;
 import lombok.Data;
@@ -30,6 +30,7 @@ public class GlobalProperties {
     private RequestMatcher whiteListPatternsAsRequestMatcher;
     private CaptchaProperties captcha;
     private RegisterProperties register;
+    private ResumeProperties resume;
 
     public void initWhiteListPatternsAsRequestMatcher() {
         whiteListPatterns = whiteListPatterns == null ? Collections.emptyList() : whiteListPatterns;

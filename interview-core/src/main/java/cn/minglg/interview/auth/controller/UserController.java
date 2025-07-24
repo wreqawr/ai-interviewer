@@ -1,9 +1,9 @@
 package cn.minglg.interview.auth.controller;
 
-import cn.minglg.interview.auth.constant.ResponseCode;
 import cn.minglg.interview.auth.pojo.User;
 import cn.minglg.interview.auth.response.R;
 import cn.minglg.interview.auth.service.UserService;
+import cn.minglg.interview.common.constant.ResponseCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

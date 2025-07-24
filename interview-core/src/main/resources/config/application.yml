@@ -58,11 +58,19 @@ spring:
           max-idle: 8
           min-idle: 0
           max-wait: -1ms
-#        cluster:
-#          refresh:
-#            adaptive: true
-#            period: 2000
-#            dynamic-refresh-sources: true
+  #        cluster:
+  #          refresh:
+  #            adaptive: true
+  #            period: 2000
+  #            dynamic-refresh-sources: true
+
+  # 文件上传参数
+  servlet:
+    multipart:
+      # 单个文件最大大小为5MB
+      max-file-size: 5MB
+      # 单次请求最大总大小（多个文件）
+      max-request-size: 20MB
 
 #mybatis配置
 mybatis:
@@ -88,7 +96,7 @@ global:
     login-uri: /api/auth/login
     # 退出页
     logout-uri: /api/auth/logout
-  # 不会被拦截的请求路径（白名单，支持通配符表达式）
+  # 不会被JWT拦截的请求路径（白名单，支持通配符表达式）
   white-list-patterns:
     - /api/auth/login         # 登录页
     - /api/auth/register      # 注册页
@@ -116,12 +124,26 @@ global:
       - /api/auth/login
       - /api/auth/register
 
+  # 注册相关
   register:
     # redis中保存的所有角色字典信息的key前缀
     role-redis-key-prefix: role:list
     # 不允许注册的角色列表
     not-allow-roles:
       - ROLE_ADMIN
+
+  # 简历相关
+  resume:
+    # 文件上传临时目录
+    file-upload-path: resumeUploads
+    # 文件类型白名单（仅允许以下类型的文件上传）
+    allow-file-types:
+      - .pdf
+      - .doc
+      - .docx
+    # 简历保存在redis中的简历文件名的key前缀
+    resume-redis-key-prefix: resume:save
+
 
 
 

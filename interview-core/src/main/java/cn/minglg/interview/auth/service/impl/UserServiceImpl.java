@@ -1,15 +1,15 @@
 package cn.minglg.interview.auth.service.impl;
 
 import cn.hutool.json.JSONUtil;
-import cn.minglg.interview.auth.constant.ResponseCode;
 import cn.minglg.interview.auth.mapper.*;
 import cn.minglg.interview.auth.pojo.Company;
 import cn.minglg.interview.auth.pojo.Role;
 import cn.minglg.interview.auth.pojo.User;
-import cn.minglg.interview.auth.properties.GlobalProperties;
 import cn.minglg.interview.auth.response.R;
 import cn.minglg.interview.auth.service.UserService;
-import cn.minglg.interview.utils.RsaUtils;
+import cn.minglg.interview.common.constant.ResponseCode;
+import cn.minglg.interview.common.properties.GlobalProperties;
+import cn.minglg.interview.common.utils.RsaUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.userdetails.UserDetails;

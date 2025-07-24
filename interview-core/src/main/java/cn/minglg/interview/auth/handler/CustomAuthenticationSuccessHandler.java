@@ -1,11 +1,11 @@
 package cn.minglg.interview.auth.handler;
 
 import cn.hutool.json.JSONUtil;
-import cn.minglg.interview.auth.constant.ResponseCode;
 import cn.minglg.interview.auth.pojo.User;
-import cn.minglg.interview.auth.properties.GlobalProperties;
 import cn.minglg.interview.auth.response.R;
-import cn.minglg.interview.utils.JwtUtils;
+import cn.minglg.interview.common.constant.ResponseCode;
+import cn.minglg.interview.common.properties.GlobalProperties;
+import cn.minglg.interview.common.utils.JwtUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

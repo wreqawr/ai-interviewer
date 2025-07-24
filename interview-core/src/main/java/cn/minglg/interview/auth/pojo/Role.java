@@ -1,6 +1,6 @@
 package cn.minglg.interview.auth.pojo;
 
-import cn.minglg.interview.auth.constant.UserRole;
+import cn.minglg.interview.common.constant.UserRole;
 import lombok.Data;
 
 import java.util.List;

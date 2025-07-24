@@ -1,11 +1,11 @@
 package cn.minglg.interview.auth.filter;
 
 import cn.hutool.json.JSONUtil;
-import cn.minglg.interview.auth.constant.ResponseCode;
 import cn.minglg.interview.auth.pojo.User;
-import cn.minglg.interview.auth.properties.GlobalProperties;
 import cn.minglg.interview.auth.response.R;
-import cn.minglg.interview.utils.JwtUtils;
+import cn.minglg.interview.common.constant.ResponseCode;
+import cn.minglg.interview.common.properties.GlobalProperties;
+import cn.minglg.interview.common.utils.JwtUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -57,30 +57,32 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         response.setContentType("application/json;charset=UTF-8");
         R checkResult = R.builder().code(ResponseCode.JWT_VERIFY_FAIL.getCode()).message("请先登录！").build();
-        // 绿色通道直接放行
-        if (this.globalProperties.getWhiteListPatternsAsRequestMatcher().matches(request)) {
+        // 绿色通道或者预检请求直接放行
+        if (this.globalProperties.getWhiteListPatternsAsRequestMatcher().matches(request)
+                || "OPTIONS".equalsIgnoreCase(request.getMethod())
+        ) {
             filterChain.doFilter(request, response);
-        } else {
-            String token = request.getHeader("Authorization");
-            try {
-                // 解析token，获取userId，和redis比较
-                User user = JwtUtils.verifyJwt(token, keyPair);
-                String authKey = globalProperties.getAuth().getAuthKeyPrefix() + ":" + user.getUserId();
-                String redisToken = redisTemplate.opsForValue().get(authKey);
-                // 验证通过放行
-                if (redisToken != null && redisToken.equals(token)) {
-                    // 要在spring security的上下文中放置一个认证对象。
-                    // 这样的话，spring security在执行后续的Filter的时候，
-                    // 才知道这个人是登录了的。
-                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                    filterChain.doFilter(request, response);
-                } else {
-                    response.getWriter().write(JSONUtil.toJsonStr(checkResult));
-                }
-            } catch (Exception e) {
+            return;
+        }
+        String token = request.getHeader("Authorization");
+        try {
+            // 解析token，获取userId，和redis比较
+            User user = JwtUtils.verifyJwt(token, keyPair);
+            String authKey = globalProperties.getAuth().getAuthKeyPrefix() + ":" + user.getUserId();
+            String redisToken = redisTemplate.opsForValue().get(authKey);
+            // 验证通过放行
+            if (redisToken != null && redisToken.equals(token)) {
+                // 要在spring security的上下文中放置一个认证对象。
+                // 这样的话，spring security在执行后续的Filter的时候，
+                // 才知道这个人是登录了的。
+                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                filterChain.doFilter(request, response);
+            } else {
                 response.getWriter().write(JSONUtil.toJsonStr(checkResult));
             }
+        } catch (Exception e) {
+            response.getWriter().write(JSONUtil.toJsonStr(checkResult));
         }
     }
 }

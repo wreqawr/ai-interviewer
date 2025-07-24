@@ -1,4 +1,4 @@
-package cn.minglg.interview.auth.constant;
+package cn.minglg.interview.common.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,6 +25,8 @@ public enum ResponseCode {
     LOGOUT_FAIL(203, "退出失败"),
     // 注册失败
     REGISTER_FAIL(204, "注册失败"),
+    // 简历上传失败
+    RESUME_UPLOAD_FAIL(205, "简历上传失败"),
     // 登录认证失败
     AUTH_FAIL(401, "登录认证失败"),
     // 权限不足

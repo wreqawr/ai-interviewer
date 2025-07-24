@@ -3,7 +3,7 @@ package cn.minglg.interview.auth.config;
 import cn.hutool.captcha.generator.CodeGenerator;
 import cn.hutool.captcha.generator.MathGenerator;
 import cn.hutool.captcha.generator.RandomGenerator;
-import cn.minglg.interview.auth.properties.GlobalProperties;
+import cn.minglg.interview.common.properties.GlobalProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

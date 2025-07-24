@@ -1,4 +1,4 @@
-package cn.minglg.interview.utils;
+package cn.minglg.interview.common.utils;
 
 import cn.minglg.interview.auth.exception.InvalidUsernameOrPasswordException;
 

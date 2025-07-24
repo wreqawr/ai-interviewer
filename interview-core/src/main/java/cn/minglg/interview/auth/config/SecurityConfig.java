@@ -8,9 +8,10 @@ import cn.minglg.interview.auth.handler.CustomAccessDeniedHandler;
 import cn.minglg.interview.auth.handler.CustomAuthenticationFailureHandler;
 import cn.minglg.interview.auth.handler.CustomAuthenticationSuccessHandler;
 import cn.minglg.interview.auth.handler.CustomLogoutSuccessHandler;
-import cn.minglg.interview.auth.properties.GlobalProperties;
+import cn.minglg.interview.common.properties.GlobalProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -22,7 +23,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.context.SecurityContextHolderFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -146,26 +146,29 @@ public class SecurityConfig {
     @Bean("securityFilterChain")
     public SecurityFilterChain securityFilterChain(HttpSecurity http, CustomAuthenticationFilter customAuthenticationFilter, CorsConfigurationSource configurationSource) throws Exception {
         return http
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(globalProperties.getWhiteListPatterns().toArray(new String[0]))
-                        .permitAll()  // 白名单内请求，无需认证
-                        .anyRequest().authenticated() // 其他所有请求走认证
-                )
                 // 关闭CSRF
                 .csrf(AbstractHttpConfigurer::disable)
                 // 允许跨域（后续使用nginx反向代理无需配置跨域）
                 .cors(cors ->
                         cors.configurationSource(configurationSource))
+                .authorizeHttpRequests(auth -> auth
+                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()// 显式放行所有OPTIONS
+//                                .anyRequest().permitAll()
+                                .requestMatchers(globalProperties.getWhiteListPatterns().toArray(new String[0])).permitAll()  // 白名单内请求，无需认证
+                                .anyRequest().authenticated() // 其他所有请求走认证
+                )
+
                 // 前后端分离，无需session
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // 自定义认证过滤器，替换框架默认的UsernamePasswordAuthenticationFilter
                 .addFilterAt(customAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                // 关键位置：在 SecurityContextHolderFilter之前添加jwtTokenFilter
-                .addFilterBefore(jwtTokenFilter, SecurityContextHolderFilter.class)
+                // 加入request包装过滤器
+                .addFilterBefore(requestBodyCacheFilter, CustomAuthenticationFilter.class)
                 // 加入验证码过滤器
                 .addFilterBefore(captchaFilter, CustomAuthenticationFilter.class)
-                // 加入request包装过滤器
-                .addFilterBefore(requestBodyCacheFilter, JwtTokenFilter.class)
+                // 关键位置：在 CustomAuthenticationFilter之前添加jwtTokenFilter
+                .addFilterBefore(jwtTokenFilter, CustomAuthenticationFilter.class)
+
                 // 权限不足时执行customAccessDeniedHandler
                 .exceptionHandling(exceptionHandling -> exceptionHandling.accessDeniedHandler(customAccessDeniedHandler))
                 .logout(logout -> logout
