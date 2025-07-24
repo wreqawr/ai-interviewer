@@ -1,9 +1,11 @@
 package cn.minglg.interview.resume.service.impl;
 
 import cn.hutool.json.JSONUtil;
+import cn.minglg.interview.auth.pojo.User;
 import cn.minglg.interview.auth.response.R;
 import cn.minglg.interview.common.constant.ResponseCode;
 import cn.minglg.interview.common.properties.GlobalProperties;
+import cn.minglg.interview.common.utils.UserUtils;
 import cn.minglg.interview.resume.service.ResumeService;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -49,6 +51,7 @@ public class ResumeServiceImpl implements ResumeService {
     public R resumeUpload(MultipartFile file) {
         String fileUploadPath = globalProperties.getResume().getFileUploadPath();
         List<String> allowFileTypes = globalProperties.getResume().getAllowFileTypes();
+
         // 第一步：基础校验
         if (file.isEmpty()) {
             return R.builder()
@@ -82,8 +85,21 @@ public class ResumeServiceImpl implements ResumeService {
             Files.createDirectories(fileStorageLocation);
             // 第七步：实际保存
             file.transferTo(targetLocation);
+            // 第八步：用户简历元信息保存至redis
+            User user = UserUtils.getCurrentUser();
+            String redisKey = globalProperties.getResume().getResumeRedisKeyPrefix();
+            String hashKey = "";
+            if (user != null) {
+                hashKey = String.valueOf(user.getUserId());
+            }
+            String hashValueStr = (String) redisTemplate.opsForHash().get(redisKey, hashKey);
+            hashValueStr = hashValueStr == null ? "[]" : hashValueStr;
+            List<String> hashValueList = JSONUtil.toList(hashValueStr, String.class);
+            hashValueList.add(targetLocation.toString());
+            hashValueStr = JSONUtil.toJsonStr(hashValueList);
+            redisTemplate.opsForHash().put(redisKey, hashKey, hashValueStr);
 
-            // 第八步：构建响应
+            // 第九步：构建响应
             Map<String, ? extends Serializable> message = Map.of("原始文件名", originalFilename,
                     "存储文件名", newFilename,
                     "文件类型", Objects.requireNonNull(file.getContentType()),
