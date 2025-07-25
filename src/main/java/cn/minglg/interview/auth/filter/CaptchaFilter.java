@@ -10,6 +10,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
@@ -27,6 +28,7 @@ import java.util.Map;
  * @Create 2025/7/19
  * @Version 1.0
  */
+@RequiredArgsConstructor
 @Component
 public class CaptchaFilter extends OncePerRequestFilter {
 
@@ -34,11 +36,7 @@ public class CaptchaFilter extends OncePerRequestFilter {
     private final StringRedisTemplate redisTemplate;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public CaptchaFilter(GlobalProperties globalProperties,
-                         StringRedisTemplate redisTemplate) {
-        this.globalProperties = globalProperties;
-        this.redisTemplate = redisTemplate;
-    }
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

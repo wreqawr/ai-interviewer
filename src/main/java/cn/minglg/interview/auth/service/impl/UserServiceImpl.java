@@ -10,7 +10,7 @@ import cn.minglg.interview.common.constant.ResponseCode;
 import cn.minglg.interview.common.properties.GlobalProperties;
 import cn.minglg.interview.common.response.R;
 import cn.minglg.interview.common.utils.RsaUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -31,6 +31,7 @@ import java.util.UUID;
  * @Create 2025/6/13
  * @Version 1.0
  */
+@RequiredArgsConstructor
 @Service
 public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
@@ -42,27 +43,6 @@ public class UserServiceImpl implements UserService {
     private final KeyPair keyPair;
     private final StringRedisTemplate redisTemplate;
     private final GlobalProperties globalProperties;
-
-    @Autowired
-    public UserServiceImpl(UserMapper userMapper,
-                           RoleMapper roleMapper,
-                           UserRoleMapper userRoleMapper,
-                           CompanyMapper companyMapper,
-                           UserCompanyMapper userCompanyMapper,
-                           PasswordEncoder passwordEncoder,
-                           KeyPair keyPair,
-                           StringRedisTemplate redisTemplate,
-                           GlobalProperties globalProperties) {
-        this.userMapper = userMapper;
-        this.roleMapper = roleMapper;
-        this.userRoleMapper = userRoleMapper;
-        this.companyMapper = companyMapper;
-        this.userCompanyMapper = userCompanyMapper;
-        this.passwordEncoder = passwordEncoder;
-        this.keyPair = keyPair;
-        this.redisTemplate = redisTemplate;
-        this.globalProperties = globalProperties;
-    }
 
 
     @Override

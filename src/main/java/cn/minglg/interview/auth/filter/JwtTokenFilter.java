@@ -10,6 +10,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,19 +29,12 @@ import java.security.KeyPair;
  * @Create 2025/7/13
  * @Version 1.0
  */
+@RequiredArgsConstructor
 @Component
 public class JwtTokenFilter extends OncePerRequestFilter {
     private final KeyPair keyPair;
     private final StringRedisTemplate redisTemplate;
     private final GlobalProperties globalProperties;
-
-    public JwtTokenFilter(KeyPair keyPair,
-                          StringRedisTemplate redisTemplate,
-                          GlobalProperties globalProperties) {
-        this.keyPair = keyPair;
-        this.redisTemplate = redisTemplate;
-        this.globalProperties = globalProperties;
-    }
 
     /**
      * Same contract as for {@code doFilter}, but guaranteed to be

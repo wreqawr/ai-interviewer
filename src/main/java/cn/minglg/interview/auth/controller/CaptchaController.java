@@ -4,6 +4,7 @@ import cn.hutool.captcha.ICaptcha;
 import cn.minglg.interview.auth.service.CaptchaService;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,13 +20,10 @@ import java.util.Map;
  * @Create 2025/7/18
  * @Version 1.0
  */
+@RequiredArgsConstructor
 @RestController
 public class CaptchaController {
     private final CaptchaService captchaService;
-
-    public CaptchaController(CaptchaService captchaService) {
-        this.captchaService = captchaService;
-    }
 
     @GetMapping("/api/auth/captcha")
     public void getCaptcha(HttpServletResponse response) throws IOException {

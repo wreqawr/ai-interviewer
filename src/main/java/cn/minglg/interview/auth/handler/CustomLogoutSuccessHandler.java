@@ -9,6 +9,7 @@ import cn.minglg.interview.common.utils.JwtUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
@@ -27,6 +28,7 @@ import java.security.KeyPair;
  * @Version 1.0
  */
 
+@RequiredArgsConstructor
 @Component
 public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
 
@@ -34,16 +36,8 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
     private final GlobalProperties globalProperties;
     private final KeyPair keyPair;
 
-    public CustomLogoutSuccessHandler(StringRedisTemplate redisTemplate,
-                                      GlobalProperties globalProperties,
-                                      KeyPair keyPair) {
-        this.redisTemplate = redisTemplate;
-        this.globalProperties = globalProperties;
-        this.keyPair = keyPair;
-    }
-
     @Override
-    public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+    public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         // 获取当前登录用户信息
         String authorization = request.getHeader("Authorization");
         R result = null;

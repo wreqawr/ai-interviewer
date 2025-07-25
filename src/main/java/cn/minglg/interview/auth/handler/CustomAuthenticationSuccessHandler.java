@@ -9,6 +9,7 @@ import cn.minglg.interview.common.utils.JwtUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -27,18 +28,13 @@ import java.util.concurrent.TimeUnit;
  * @Create 2025/7/10
  * @Version 1.0
  */
+@RequiredArgsConstructor
 @Component
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     private final KeyPair keyPair;
     private final StringRedisTemplate redisTemplate;
     private final GlobalProperties globalProperties;
-
-    public CustomAuthenticationSuccessHandler(KeyPair keyPair, StringRedisTemplate redisTemplate, GlobalProperties globalProperties) {
-        this.keyPair = keyPair;
-        this.redisTemplate = redisTemplate;
-        this.globalProperties = globalProperties;
-    }
 
     /**
      * 在用户成功通过身份验证时调用。
@@ -49,7 +45,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
      *                       身份验证过程。
      */
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         response.setContentType("application/json;charset=UTF-8");
         User user = (User) authentication.getPrincipal();
         // 生成JWT令牌

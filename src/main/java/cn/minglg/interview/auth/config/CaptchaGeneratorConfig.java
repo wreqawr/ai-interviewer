@@ -4,6 +4,7 @@ import cn.hutool.captcha.generator.CodeGenerator;
 import cn.hutool.captcha.generator.MathGenerator;
 import cn.hutool.captcha.generator.RandomGenerator;
 import cn.minglg.interview.common.properties.GlobalProperties;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -17,13 +18,10 @@ import org.springframework.context.annotation.Configuration;
  * @Version 1.0
  */
 @Configuration
+@RequiredArgsConstructor
 public class CaptchaGeneratorConfig {
 
     private final GlobalProperties globalProperties;
-
-    public CaptchaGeneratorConfig(GlobalProperties globalProperties) {
-        this.globalProperties = globalProperties;
-    }
 
     /**
      * 随机字符验证码生成器

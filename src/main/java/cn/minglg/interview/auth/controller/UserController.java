@@ -4,7 +4,7 @@ import cn.minglg.interview.auth.pojo.User;
 import cn.minglg.interview.auth.service.UserService;
 import cn.minglg.interview.common.constant.ResponseCode;
 import cn.minglg.interview.common.response.R;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,19 +18,12 @@ import org.springframework.web.bind.annotation.*;
  * @Create 2025/6/13
  * @Version 1.0
  */
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/auth")
 public class UserController {
     private final String publicKeyPem;
     private final UserService userService;
-
-
-    @Autowired
-    public UserController(String publicKeyPem,
-                          UserService userService) {
-        this.publicKeyPem = publicKeyPem;
-        this.userService = userService;
-    }
 
     @GetMapping("/publicKey")
     public ResponseEntity<R> getPublicKey() {

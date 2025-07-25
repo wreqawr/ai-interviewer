@@ -7,6 +7,7 @@ import cn.minglg.interview.common.properties.GlobalProperties;
 import cn.minglg.interview.common.response.R;
 import cn.minglg.interview.common.utils.UserUtils;
 import cn.minglg.interview.resume.service.ResumeService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -30,16 +31,12 @@ import java.util.UUID;
  * @Create 2025/7/23
  * @Version 1.0
  */
+@RequiredArgsConstructor
 @Service
 public class ResumeServiceImpl implements ResumeService {
     private final GlobalProperties globalProperties;
     private final StringRedisTemplate redisTemplate;
 
-    public ResumeServiceImpl(GlobalProperties globalProperties,
-                             StringRedisTemplate redisTemplate) {
-        this.globalProperties = globalProperties;
-        this.redisTemplate = redisTemplate;
-    }
 
     /**
      * 简历上传接口

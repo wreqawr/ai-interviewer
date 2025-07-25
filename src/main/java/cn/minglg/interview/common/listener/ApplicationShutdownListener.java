@@ -1,6 +1,7 @@
 package cn.minglg.interview.common.listener;
 
 import cn.minglg.interview.common.properties.GlobalProperties;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.data.redis.core.Cursor;
@@ -17,16 +18,12 @@ import org.springframework.stereotype.Component;
  * @Create 2025/7/18
  * @Version 1.0
  */
+@RequiredArgsConstructor
 @Component
 public class ApplicationShutdownListener implements ApplicationListener<ContextClosedEvent> {
     private final StringRedisTemplate redisTemplate;
     private final GlobalProperties globalProperties;
 
-    public ApplicationShutdownListener(StringRedisTemplate redisTemplate,
-                                       GlobalProperties globalProperties) {
-        this.redisTemplate = redisTemplate;
-        this.globalProperties = globalProperties;
-    }
 
     /**
      * 处理应用程序事件。

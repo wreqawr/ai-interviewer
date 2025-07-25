@@ -9,6 +9,7 @@ import cn.minglg.interview.auth.handler.CustomAuthenticationFailureHandler;
 import cn.minglg.interview.auth.handler.CustomAuthenticationSuccessHandler;
 import cn.minglg.interview.auth.handler.CustomLogoutSuccessHandler;
 import cn.minglg.interview.common.properties.GlobalProperties;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -39,6 +40,7 @@ import java.util.List;
  * @Create 2025/6/16
  * @Version 1.0
  */
+@RequiredArgsConstructor
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -80,25 +82,6 @@ public class SecurityConfig {
      * 包装request的filter
      */
     private final RequestBodyCacheFilter requestBodyCacheFilter;
-
-    public SecurityConfig(CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler,
-                          CustomAuthenticationFailureHandler customAuthenticationFailureHandler,
-                          CustomAccessDeniedHandler customAccessDeniedHandler,
-                          CustomLogoutSuccessHandler customLogoutSuccessHandler,
-                          KeyPair keyPair, GlobalProperties globalProperties,
-                          JwtTokenFilter jwtTokenFilter,
-                          CaptchaFilter captchaFilter,
-                          RequestBodyCacheFilter requestBodyCacheFilter) {
-        this.customAuthenticationSuccessHandler = customAuthenticationSuccessHandler;
-        this.customAuthenticationFailureHandler = customAuthenticationFailureHandler;
-        this.customAccessDeniedHandler = customAccessDeniedHandler;
-        this.customLogoutSuccessHandler = customLogoutSuccessHandler;
-        this.keyPair = keyPair;
-        this.globalProperties = globalProperties;
-        this.jwtTokenFilter = jwtTokenFilter;
-        this.captchaFilter = captchaFilter;
-        this.requestBodyCacheFilter = requestBodyCacheFilter;
-    }
 
 
     @Bean
