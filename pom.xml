@@ -10,9 +10,9 @@
     </parent>
     <groupId>cn.minglg.ai-interviewer</groupId>
     <artifactId>interview-app</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>interview-core</name>
-    <description>interview-core</description>
+    <version>1.0.0</version>
+    <name>interview-app</name>
+    <description>interview-app</description>
     <url/>
     <licenses>
         <license/>
